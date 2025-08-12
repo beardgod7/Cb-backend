@@ -1,8 +1,50 @@
-const { EventBooking } = require("./model");
+const { FormFieldTemplate, EventBooking } = require("./model");
 
-/**
- * Creates a new appointment.
- */
+async function upsertFormFieldTemplates({
+  EventId = null,
+  isGlobal = false,
+  fields,
+}) {
+  if (!Array.isArray(fields)) {
+    throw new Error("Fields must be an array");
+  }
+
+  const whereClause = isGlobal ? { isGlobal: true } : { EventId };
+
+  let existing = await FormFieldTemplate.findOne({ where: whereClause });
+
+  if (existing) {
+    await existing.update({
+      fields,
+      isGlobal,
+      EventId: isGlobal ? null : EventId,
+    });
+    return { updated: [existing], created: [] };
+  } else {
+    const created = await FormFieldTemplate.create({
+      fields,
+      isGlobal,
+      EventId: isGlobal ? null : EventId,
+    });
+    return { updated: [], created: [created] };
+  }
+}
+
+async function getAllFormFieldTemplates(EventId) {
+  // Try to get event-specific first, else fallback to global
+  let template = await FormFieldTemplate.findOne({ where: { EventId } });
+  if (!template) {
+    template = await FormFieldTemplate.findOne({ where: { isGlobal: true } });
+  }
+  return template;
+}
+
+// // Fetch all reusable form fields (for displaying to user)
+// async function getAllFormFieldTemplates() {
+//   return await FormFieldTemplate.findAll();
+// }
+
+// Save user booking with dynamic answers in metadata
 async function createEventBooking(EventBookingData) {
   try {
     return await EventBooking.create(EventBookingData);
@@ -12,103 +54,43 @@ async function createEventBooking(EventBookingData) {
   }
 }
 
+// Fetch all bookings
 async function getAllEventBooking() {
-  try {
-    return await EventBooking.findAll();
-  } catch (err) {
-    console.log("Error fetching EventBooking: " + err.message);
-    throw new Error("Error fetching EventBooking: " + err.message);
-  }
+  return await EventBooking.findAll();
 }
 
-/**
- * Fetches all EventBooking for a specific provider.
- * @param {UUID} userId - The provider's ID.
- * @returns {Promise<[]>} - List of appointments.
- */
-async function getAllEventBookingbyusersid(userId) {
-  try {
-    return await EventBooking.findAll({
-      where: { userId: userId },
-    });
-  } catch (err) {
-    console.log("Error fetching EventBooking: " + err.message);
-    throw new Error("Error fetching EventBooking: " + err.message);
-  }
+// Fetch bookings for a specific user
+async function getAllEventBookingByUserId(userId) {
+  return await EventBooking.findAll({ where: { userId } });
 }
 
-/**
- * Fetches a specific EventBooking by its ID.
- * @param {UUID} EventBookingId - The appointment ID.
- * @returns {Promise<Appointment|null>} - The appointment details or null if not found.
- */
-async function getEventBookingById(EventBookingId) {
-  try {
-    return await EventBooking.findByPk(EventBookingId);
-  } catch (err) {
-    console.log("Error fetching EventBooking: " + err.message);
-    throw new Error("Error fetching EventBooking by ID: " + err.message);
-  }
+// Fetch single booking
+async function getEventBookingById(id) {
+  return await EventBooking.findByPk(id);
 }
 
-/**
- * Updates an appointment by its ID.
- * @param {UUID} appointmentId - The appointment ID.
- * @param {Object} updateData - The data to update the appointment with.
- * @returns {Promise<Appointment>} - The updated appointment.
- */
-async function updateEventBooking(EventBookingId, updateData) {
-  try {
-    const appointment = await EventBooking.findByPk(EventBookingId);
-    if (!appointment) throw new Error("Appointment not found");
-    return await appointment.update(updateData);
-  } catch (err) {
-    console.log("Error updating EventBooking: " + err.message);
-    throw new Error("Error updating EventBooking: " + err.message);
-  }
+// Update booking
+async function updateEventBooking(id, updateData) {
+  const booking = await EventBooking.findByPk(id);
+  if (!booking) throw new Error("Booking not found");
+  return await booking.update(updateData);
 }
 
-/**
- * Deletes an appointment by its ID.
- * @param {UUID} EventBooking - The appointment ID.
- * @returns {Promise<boolean>} - Returns true if deletion was successful.
- */
-async function deleteEventBooking(EventBookingId) {
-  try {
-    const appointment = await EventBooking.findByPk(EventBookingId);
-    if (!appointment) throw new Error("EventBooking not found");
-    await appointment.destroy();
-    return true;
-  } catch (err) {
-    console.log("Error deleting EventBooking " + err.message);
-    throw new Error("Error deleting EventBooking: " + err.message);
-  }
-}
-
-/**
- * Updates the status of an appointment.
- * @param {UUID} EventBookingId - The appointment ID.
- * @param {string} status - The new status of the appointment.
- * @returns {Promise<Appointment>} - The updated appointment.
- */
-async function updateEventBookingStatus(EventBookingId, status) {
-  try {
-    const appointment = await EventBooking.findByPk(EventBookingId);
-    if (!appointment) throw new Error("Appointment not found");
-    appointment.status = status;
-    return await appointment.save();
-  } catch (err) {
-    console.log("Error updating appointment status: " + err.message);
-    throw new Error("Error updating appointment status: " + err.message);
-  }
+// Delete booking
+async function deleteEventBooking(id) {
+  const booking = await EventBooking.findByPk(id);
+  if (!booking) throw new Error("Booking not found");
+  await booking.destroy();
+  return true;
 }
 
 module.exports = {
+  upsertFormFieldTemplates,
+  getAllFormFieldTemplates,
   createEventBooking,
-  getAllEventBookingbyusersid,
+  getAllEventBooking,
+  getAllEventBookingByUserId,
   getEventBookingById,
   updateEventBooking,
   deleteEventBooking,
-  updateEventBookingStatus,
-  getAllEventBooking,
 };

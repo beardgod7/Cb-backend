@@ -1,12 +1,17 @@
 const express = require("express");
-const controller = require("./controller");
-
 const router = express.Router();
+const eventController = require("./controller");
 
-//router.get("/userbooking", controller.getuserEventbooking);
-router.get("/Eventbooking/:EventId", controller.getEventbookingbyid);
-router.get("/Eventbooking", controller.getallEventbooking);
-router.post("/booking", controller.createEventBooking);
-//router.put("/status/:EventId", controller.updateEventBookingStatusController);
+// Admin: manage reusable form fields
+router.post("/admin/form-fields", eventController.createOrUpdateTemplate);
+router.get("/admin/:EventId", eventController.getTemplate);
+
+// User: event bookings
+router.post("/book", eventController.createEventBooking);
+router.get("/bookings", eventController.getAllBookings);
+router.get("/bookings/user/:userId", eventController.getBookingsByUser);
+router.get("/bookings/:id", eventController.getBookingById);
+//router.put("/bookings/:id", eventController.updateBooking);
+router.delete("/bookings/:id", eventController.deleteBooking);
 
 module.exports = router;

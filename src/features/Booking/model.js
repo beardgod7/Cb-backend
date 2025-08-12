@@ -2,82 +2,34 @@ const { DataTypes } = require("sequelize");
 const { v4: uuidv4 } = require("uuid");
 const sequelize = require("../../config/dbconfig");
 
-// const Appointment = sequelize.define(
-//   "Appointment1",
-//   {
-//     id: {
-//       type: DataTypes.UUID,
-//       defaultValue: DataTypes.UUIDV4,
-//       primaryKey: true,
-//     },
-//     driverId: {
-//       type: DataTypes.UUID,
-//       allowNull: false,
-//     },
-//     userId: {
-//       type: DataTypes.UUID,
-//       allowNull: false,
-//     },
-//     listingId: {
-//       type: DataTypes.UUID,
-//       allowNull: false,
-//     },
-//     appointmentTime: {
-//       type: DataTypes.JSONB,
-//       allowNull: true,
-//     },
-//     description: {
-//       type: DataTypes.STRING,
-//       allowNull: true,
-//     },
-//     status: {
-//       type: DataTypes.ENUM(
-//         "scheduled",
-//         "rescheduled",
-//         "cancelled",
-//         "request",
-//         "completed",
-//         "accept",
-//         "decline",
-//         "negotiation"
-//       ),
-//       allowNull: true,
-//     },
-//     price: {
-//       type: DataTypes.FLOAT,
-//       allowNull: true,
-//     },
-//     negotiation: {
-//       type: DataTypes.JSONB,
-//       allowNull: true,
-//       description:
-//         "Negotiation history and current status. Keys: proposedBy, userOffer, driverOffer, status",
-//       defaultValue: null,
-//     },
+const FormFieldTemplate = sequelize.define(
+  "FormFieldTemplate",
+  {
+    id: {
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+      primaryKey: true,
+    },
+    EventId: {
+      type: DataTypes.UUID,
+      allowNull: true,
+    },
+    isGlobal: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
+    fields: {
+      type: DataTypes.JSONB,
+      allowNull: false,
+    },
+  },
+  {
+    timestamps: true,
+    freezeTableName: true,
+  }
+);
 
-//     cancellationReason: {
-//       type: DataTypes.STRING,
-//       allowNull: true,
-//     },
-//     pickupLocation: {
-//       type: DataTypes.JSONB,
-//       allowNull: true,
-//     },
-//     deliveryLocation: {
-//       type: DataTypes.JSONB,
-//       allowNull: true,
-//     },
-//     reminders: {
-//       type: DataTypes.ARRAY(DataTypes.INTEGER),
-//       allowNull: true,
-//     },
-//   },
-//   {
-//     timestamps: true,
-//     freezeTableName: true,
-//   }
-// );
-
+// Event booking stores both fixed and dynamic fields
 const EventBooking = sequelize.define(
   "EventBooking",
   {
@@ -105,14 +57,22 @@ const EventBooking = sequelize.define(
     Email: {
       type: DataTypes.STRING,
       allowNull: true,
+      validate: {
+        isEmail: true,
+      },
     },
     PhoneNumber: {
       type: DataTypes.STRING,
       allowNull: true,
     },
     Status: {
-      type: DataTypes.ENUM("Register", "Volunteer"),
+      type: DataTypes.ENUM("Register", "Volunteer", "Sponsor"),
       allowNull: true,
+    },
+    metadata: {
+      type: DataTypes.JSONB,
+      allowNull: true,
+      defaultValue: {},
     },
   },
   {
@@ -122,5 +82,6 @@ const EventBooking = sequelize.define(
 );
 
 module.exports = {
+  FormFieldTemplate,
   EventBooking,
 };

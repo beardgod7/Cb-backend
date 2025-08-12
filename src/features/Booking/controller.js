@@ -1,90 +1,162 @@
-const repository = require("./repository");
-const { EventBookingSchema, updateEventBookingSchema } = require("./schema");
+const {
+  upsertFormFieldTemplates,
+  getAllFormFieldTemplates,
+  createEventBooking,
+  getAllEventBooking,
+  getAllEventBookingByUserId,
+  getEventBookingById,
+  updateEventBooking,
+  deleteEventBooking,
+} = require("./repository");
+const { EventBookingSchema } = require("./schema");
 
-async function createEventBooking(req, res, next) {
+// =====================
+// Admin: Form Templates
+// =====================
+
+exports.createOrUpdateTemplate = async (req, res) => {
   try {
-    const userId = req.userId;
-    const validatedData = await EventBookingSchema.validateAsync(req.body);
-    const newUserData = { ...validatedData, userId };
-    const newUser = await repository.createEventBooking(newUserData);
-    return res.status(201).json({
-      message: "booking sucessfull.",
-    });
-  } catch (err) {
-    console.error("booking error: ", err);
-    return res
-      .status(500)
-      .json({ message: "Internal Server Error", error: err.message });
-  }
-}
+    const { EventId, isGlobal, fields } = req.body;
 
-/**
- * Controller to update the status of an appointment.
- */
-async function updateEventBookingStatusController(req, res) {
+    const result = await upsertFormFieldTemplates({
+      EventId,
+      isGlobal,
+      fields,
+    });
+
+    res.status(200).json({
+      message: "Form field template processed successfully",
+      result,
+    });
+  } catch (error) {
+    console.error("Error in createOrUpdateTemplate:", error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Get form field templates by EventId (fallback to global)
+exports.getTemplate = async (req, res) => {
   try {
     const { EventId } = req.params;
 
-    const { status } = req.body;
-    //const reciever = await repository.getAppointmentById(appointmentId);
-    const updatedAppointment = await repository.updateEventBookingStatus(
-      EventId,
-      status
-    );
-    return res.status(200).json({
-      message: " bookings updated successfully.",
-      data: updatedAppointment,
-    });
-  } catch (error) {
-    console.log(error);
-  }
-}
+    const template = await getAllFormFieldTemplates(EventId);
 
-// Function to get user by ID
-const getuserEventbooking = async (req, res) => {
-  const userId = req.userId;
-  try {
-    const user = await repository.getAllEventBookingbyusersid(userId);
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
+    if (!template) {
+      return res.status(404).json({ message: "No template found" });
     }
-    return res.status(200).json(user);
+
+    res.status(200).json(template);
   } catch (error) {
-    console.log(error);
-    return res.status(500).json({ message: "Internal Server Error" });
+    console.error("Error in getTemplate:", error);
+    res.status(500).json({ message: error.message });
   }
 };
 
-// Function to get user by ID
-const getEventbookingbyid = async (req, res) => {
-  const { EventId } = req.params;
+// =====================
+// User: Event Bookings
+// =====================
+
+// // Create a booking with dynamic answers in metadata
+// exports.createEventBooking = async (req, res) => {
+//   try {
+//     const userId = req.userId;
+//     const validatedData = await EventBookingSchema.validateAsync(req.body);
+//     const newUserData = { ...validatedData, userId };
+//     const newUser = await createEventBooking(newUserData);
+//     return res.status(201).json({
+//       message: "booking sucessfull.",
+//     });
+//   } catch (err) {
+//     console.error("booking error: ", err);
+//     return res
+//       .status(500)
+//       .json({ message: "Internal Server Error", error: err.message });
+//   }
+// };
+exports.createEventBooking = async (req, res, next) => {
   try {
-    const user = await repository.getEventBookingById(EventId);
-    if (!user) {
-      return res.status(404).json({ message: "event booking not found" });
+    // Validate main fields but allow unknown keys
+    const validatedData = await EventBookingSchema.validateAsync(req.body);
+    const userId = req.userId;
+    const knownFields = [
+      "EventId",
+      "FirstName",
+      "LastName",
+      "PhoneNumber",
+      "status",
+    ];
+
+    // Extract unknown fields into metadata
+    const metadata = {};
+    for (const key in req.body) {
+      if (!knownFields.includes(key)) {
+        metadata[key] = req.body[key];
+      }
     }
-    return res.status(200).json(user);
-  } catch (error) {
-    console.log(error);
-    return res.status(500).json({ message: "Internal Server Error" });
+
+    const bookingData = {
+      ...validatedData,
+      userId,
+      metadata,
+    };
+
+    const newBooking = await createEventBooking(bookingData);
+    res.status(201).json({ message: "Booking created", booking: newBooking });
+  } catch (err) {
+    next(err);
   }
 };
 
-// Function to get user by ID
-const getallEventbooking = async (req, res) => {
+// Get all bookings (admin view)
+exports.getAllBookings = async (req, res) => {
   try {
-    const user = await repository.getAllEventBooking();
-    return res.status(200).json(user);
-  } catch (error) {
-    console.log(error);
-    return res.status(500).json({ message: "Internal Server Error" });
+    const bookings = await getAllEventBooking();
+    res.status(200).json({ success: true, data: bookings });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
   }
 };
 
-module.exports = {
-  createEventBooking,
-  getallEventbooking,
-  getEventbookingbyid,
-  getuserEventbooking,
-  updateEventBookingStatusController,
+// Get bookings for a specific user
+exports.getBookingsByUser = async (req, res) => {
+  try {
+    const bookings = await getAllEventBookingByUserId(req.params.userId);
+    res.status(200).json({ success: true, data: bookings });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+// Get booking by ID
+exports.getBookingById = async (req, res) => {
+  try {
+    const booking = await getEventBookingById(req.params.id);
+    if (!booking)
+      return res
+        .status(404)
+        .json({ success: false, message: "Booking not found" });
+    res.status(200).json({ success: true, data: booking });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+// Update booking
+exports.updateBooking = async (req, res) => {
+  try {
+    const updated = await updateEventBooking(req.params.id, req.body);
+    res.status(200).json({ success: true, data: updated });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+// Delete booking
+exports.deleteBooking = async (req, res) => {
+  try {
+    const deleted = await deleteEventBooking(req.params.id);
+    res.status(200).json({ success: true, deleted });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
 };
