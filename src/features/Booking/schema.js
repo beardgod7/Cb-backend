@@ -9,7 +9,7 @@ const EventBookingSchema = Joi.object({
   PhoneNumber: Joi.string().max(255).optional(),
   status: Joi.string().valid("Register", "Volunteer", "Sponsor").optional(),
   Email: Joi.string().email().optional(),
-}).unknown(true); // allow extra fields without errors
+}).unknown(true);
 
 // const updateEventBookingSchema = Joi.object({
 //   // userId: Joi.string().uuid().optional(),
