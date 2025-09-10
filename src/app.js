@@ -1,73 +1,47 @@
 // server.ts
-import express from "express";
-import cors from "cors";
-import helmet from "helmet";
-import morgan from "morgan";
-import http from "http";
-import { Server as SocketIO } from "socket.io";
-import responseTime from "response-time";
-import client from "prom-client";
-import dotenv from "dotenv";
-import routes from "./routes/index";
-import { errorHandler } from "./middleware/errorhandler";
-
-dotenv.config();
+const express = require("express");
+const cors = require("cors");
+const helmet = require("helmet");
+const morgan = require("morgan");
+const http = require("http");
+const socketIo = require("socket.io");
+require("dotenv").config();
+const routes = require("./routes/index");
+const { errorHandler } = require("./middleware/errorhandler");
+const client = require("prom-client");
+const responseTime = require("response-time");
 
 const app = express();
 const server = http.createServer(app);
 
-// ------------------
-// CORS Configuration
-// ------------------
-const allowedOrigins = [
-  "http://localhost:5173",
-  "http://localhost:3000",
-  // "https://your-production-frontend.com",
-];
-
-const corsOptions = {
-  origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
-    if (!origin) return callback(null, true); // allow Postman, curl
-    if (allowedOrigins.includes(origin)) return callback(null, true);
-    return callback(new Error("CORS not allowed from origin: " + origin));
-  },
-  credentials: true, // allow cookies
-  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-};
-
-app.use(cors(corsOptions));
-app.options("*", cors(corsOptions)); // handle preflight requests
-
-// ------------------
-// Socket.IO Setup
-// ------------------
-const io = new SocketIO(server, {
+// Setup Socket.io with CORS
+const io = socketIo(server, {
   cors: {
-    origin: allowedOrigins,
+    origin: ["http://localhost:3000"],
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
     credentials: true,
   },
 });
 
-// Attach io instance to requests
-app.use((req, _res, next) => {
-  (req as any).io = io;
+// Attach io to requests
+app.use((req, res, next) => {
+  req.io = io;
   next();
 });
 
-// ------------------
-// Prometheus Metrics
-// ------------------
+// Promethues connection
+// Create and register Prometheus registry
 const register = new client.Registry();
 client.collectDefaultMetrics({ register });
 
-const httpRequestDuration = new client.Histogram({
+// Custom Metrics
+const httpRequestDurationMicroseconds = new client.Histogram({
   name: "http_request_duration_ms",
   help: "Duration of HTTP requests in ms",
   labelNames: ["method", "route", "code"],
-  buckets: [50, 100, 300, 500, 1000, 2000],
+  buckets: [50, 100, 300, 500, 1000, 2000], // in ms
 });
-register.registerMetric(httpRequestDuration);
+register.registerMetric(httpRequestDurationMicroseconds);
 
 const httpRequestCount = new client.Counter({
   name: "http_requests_total",
@@ -76,47 +50,58 @@ const httpRequestCount = new client.Counter({
 });
 register.registerMetric(httpRequestCount);
 
-// Track response times
+// ⏱ Middleware to track response time per route
 app.use(
   responseTime((req, res, time) => {
     if (req.route && req.route.path) {
-      httpRequestDuration.labels(req.method, req.route.path, res.statusCode.toString()).observe(time);
-      httpRequestCount.labels(req.method, req.route.path, res.statusCode.toString()).inc();
+      httpRequestDurationMicroseconds
+        .labels(req.method, req.route.path, res.statusCode)
+        .observe(time);
+      httpRequestCount.labels(req.method, req.route.path, res.statusCode).inc();
     }
   })
 );
 
-// Metrics endpoint for Prometheus scraping
-app.get("/metrics", async (_req, res) => {
+// Allowed frontend origins
+const allowedOrigins = [
+  "*",
+  "http://localhost:3000",
+  //"https://your-production-frontend.com", // ✅ Replace with actual frontend production URL
+];
+
+// Proper CORS config
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("CORS not allowed from origin: " + origin));
+      }
+    },
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+  })
+);
+
+// Handle preflight requests// Metrics endpoint for Prometheus to scrape
+app.get("/metrics", async (req, res) => {
   res.set("Content-Type", register.contentType);
   res.end(await register.metrics());
 });
+app.options("*", cors());
 
-// ------------------
-// Middleware
-// ------------------
+// Middleware setup
 app.use(helmet());
 app.use(morgan("combined"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// ------------------
 // Routes
-// ------------------
 app.use("/v1/api", routes);
 
-// ------------------
-// Global Error Handler
-// ------------------
+// Global error handler
 app.use(errorHandler);
 
-// ------------------
-// Start Server
-// ------------------
-const PORT = process.env.PORT || 5000;
-server.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
-
-export { app, server, io };
+module.exports = { app, server };
 
