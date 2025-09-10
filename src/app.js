@@ -18,7 +18,7 @@ const io = socketIo(server, {
   cors: {
     origin: ["http://localhost:3000"],
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
-    credentials: true,
+    credentials: false,
   },
 });
 
@@ -78,7 +78,7 @@ app.use(
         callback(new Error("CORS not allowed from origin: " + origin));
       }
     },
-    credentials: true,
+    credentials: false,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
   })
 );
