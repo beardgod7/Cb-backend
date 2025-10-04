@@ -15,19 +15,19 @@ const app = express();
 const server = http.createServer(app);
 
 // Setup Socket.io with CORS
-const io = socketIo(server, {
-  cors: {
-    origin: ["http://localhost:3000"],
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
-    credentials: false,
-  },
-});
+// const io = socketIo(server, {
+//   cors: {
+//     origin: ["http://localhost:3000"],
+//     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+//     credentials: false,
+//   },
+// });
 
-// Attach io to requests
-app.use((req, res, next) => {
-  req.io = io;
-  next();
-});
+// // Attach io to requests
+// app.use((req, res, next) => {
+//   req.io = io;
+//   next();
+// });
 
 // Promethues connection
 // Create and register Prometheus registry
@@ -63,26 +63,28 @@ app.use(
 );
 
 // Allowed frontend origins
-const allowedOrigins = [
-  "*",
-  "http://localhost:3000",
-  //"https://your-production-frontend.com", // ✅ Replace with actual frontend production URL
-];
+// const allowedOrigins = [
+//   "*",
+//   "http://localhost:3000",
+//   //"https://your-production-frontend.com", // ✅ Replace with actual frontend production URL
+// ];
 
-// Proper CORS config
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("CORS not allowed from origin: " + origin));
-      }
-    },
-    credentials: false,
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
-  })
-);
+// // Proper CORS config
+// app.use(
+//   cors({
+//     origin: function (origin, callback) {
+//       if (!origin || allowedOrigins.includes(origin)) {
+//         callback(null, true);
+//       } else {
+//         callback(new Error("CORS not allowed from origin: " + origin));
+//       }
+//     },
+//     credentials: false,
+//     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+//   })
+// );
+
+app.use(cors({ origin: '*', credentials: false }));
 
 // Handle preflight requests// Metrics endpoint for Prometheus to scrape
 app.get("/metrics", async (req, res) => {
