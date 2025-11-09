@@ -17,9 +17,9 @@ function authorize(requiredRoles = []) {
         process.env.JWT_SECRET
       );
 
-      req.user = decoded.sub;
+      req.user = decoded; // Store the entire decoded token, not just sub
 
-      if (!req.user?.role || !requiredRoles.includes(req.user.role)) {
+      if (!decoded.role || !requiredRoles.includes(decoded.role)) {
         return res.status(403).json({
           success: false,
           message:
