@@ -65,7 +65,53 @@
  *       content:
  *         multipart/form-data:
  *           schema:
- *             $ref: '#/components/schemas/Event'
+ *             type: object
+ *             required:
+ *               - Description
+ *               - Location
+ *             properties:
+ *               Title:
+ *                 type: string
+ *               Organizer:
+ *                 type: string
+ *               Description:
+ *                 type: string
+ *               Location:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *               Date:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *               EventHighlights:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *               Status:
+ *                 type: string
+ *                 enum: [past, upcoming]
+ *               isPublished:
+ *                 type: boolean
+ *               registrationEnabled:
+ *                 type: boolean
+ *               volunteerEnabled:
+ *                 type: boolean
+ *               eventType:
+ *                 type: string
+ *                 enum: [online, offline, hybrid]
+ *               maxAttendees:
+ *                 type: integer
+ *                 minimum: 1
+ *               registrationDeadline:
+ *                 type: string
+ *                 format: date-time
+ *               Images:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                   format: binary
+ *                 maxItems: 5
  *     responses:
  *       201:
  *         description: Event created successfully
@@ -91,7 +137,50 @@
  *       content:
  *         multipart/form-data:
  *           schema:
- *             $ref: '#/components/schemas/Event'
+ *             type: object
+ *             properties:
+ *               Title:
+ *                 type: string
+ *               Organizer:
+ *                 type: string
+ *               Description:
+ *                 type: string
+ *               Location:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *               Date:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *               EventHighlights:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *               Status:
+ *                 type: string
+ *                 enum: [past, upcoming]
+ *               isPublished:
+ *                 type: boolean
+ *               registrationEnabled:
+ *                 type: boolean
+ *               volunteerEnabled:
+ *                 type: boolean
+ *               eventType:
+ *                 type: string
+ *                 enum: [online, offline, hybrid]
+ *               maxAttendees:
+ *                 type: integer
+ *                 minimum: 1
+ *               registrationDeadline:
+ *                 type: string
+ *                 format: date-time
+ *               Images:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                   format: binary
+ *                 maxItems: 5
  *     responses:
  *       200:
  *         description: Event updated successfully
@@ -223,13 +312,12 @@
  *             properties:
  *               Title:
  *                 type: string
- *               Description:
- *                 type: string
  *               Images:
  *                 type: array
  *                 items:
  *                   type: string
  *                   format: binary
+ *                 maxItems: 5
  *     responses:
  *       201:
  *         description: Album created successfully
@@ -252,6 +340,15 @@
  *         multipart/form-data:
  *           schema:
  *             type: object
+ *             properties:
+ *               Title:
+ *                 type: string
+ *               Images:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                   format: binary
+ *                 maxItems: 5
  *     responses:
  *       200:
  *         description: Album updated successfully
