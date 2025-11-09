@@ -4,36 +4,47 @@
  *   schemas:
  *     Artifact:
  *       type: object
+ *       required:
+ *         - identificationNumber
+ *         - title
+ *         - country
+ *         - category
+ *         - fullDescription
  *       properties:
  *         id:
  *           type: string
  *           format: uuid
- *         name:
+ *         identificationNumber:
  *           type: string
- *         description:
+ *         title:
+ *           type: string
+ *         country:
  *           type: string
  *         category:
  *           type: string
- *         period:
+ *         era:
  *           type: string
- *         origin:
+ *         yearOrPeriod:
  *           type: string
- *         material:
+ *         shortDescription:
  *           type: string
- *         dimensions:
- *           type: object
- *         condition:
+ *           maxLength: 500
+ *         fullDescription:
  *           type: string
- *         isFeatured:
- *           type: boolean
- *         isAvailableForRent:
- *           type: boolean
  *         images:
  *           type: array
  *           items:
  *             type: string
  *         audioNarration:
  *           type: string
+ *         tags:
+ *           type: array
+ *           items:
+ *             type: string
+ *         isActive:
+ *           type: boolean
+ *         isFeatured:
+ *           type: boolean
  *
  * /museum/artifacts:
  *   get:
@@ -42,10 +53,6 @@
  *     parameters:
  *       - in: query
  *         name: category
- *         schema:
- *           type: string
- *       - in: query
- *         name: period
  *         schema:
  *           type: string
  *       - in: query
@@ -85,19 +92,6 @@
  *     responses:
  *       200:
  *         description: Filter options retrieved successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 categories:
- *                   type: array
- *                   items:
- *                     type: string
- *                 periods:
- *                   type: array
- *                   items:
- *                     type: string
  *
  * /museum/rental-requests:
  *   post:
@@ -111,26 +105,26 @@
  *             type: object
  *             required:
  *               - artifactId
- *               - name
+ *               - fullName
  *               - email
- *               - phone
- *               - organization
- *               - purpose
+ *               - phoneNumber
+ *               - purposeOfRental
  *               - startDate
  *               - endDate
  *             properties:
  *               artifactId:
  *                 type: string
- *               name:
+ *                 format: uuid
+ *               fullName:
+ *                 type: string
+ *               organization:
  *                 type: string
  *               email:
  *                 type: string
  *                 format: email
- *               phone:
+ *               phoneNumber:
  *                 type: string
- *               organization:
- *                 type: string
- *               purpose:
+ *               purposeOfRental:
  *                 type: string
  *               startDate:
  *                 type: string
@@ -138,6 +132,8 @@
  *               endDate:
  *                 type: string
  *                 format: date
+ *               message:
+ *                 type: string
  *     responses:
  *       201:
  *         description: Rental request created successfully
@@ -155,18 +151,16 @@
  *             required:
  *               - name
  *               - email
- *               - organization
- *               - proposalDetails
+ *               - message
  *             properties:
  *               name:
  *                 type: string
- *               email:
- *                 type: string
- *               phone:
- *                 type: string
  *               organization:
  *                 type: string
- *               proposalDetails:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *               message:
  *                 type: string
  *     responses:
  *       201:
@@ -200,20 +194,44 @@
  *         multipart/form-data:
  *           schema:
  *             type: object
+ *             required:
+ *               - identificationNumber
+ *               - title
+ *               - country
+ *               - category
+ *               - fullDescription
  *             properties:
- *               name:
+ *               identificationNumber:
  *                 type: string
- *               description:
+ *               title:
+ *                 type: string
+ *               country:
  *                 type: string
  *               category:
  *                 type: string
- *               period:
+ *               era:
  *                 type: string
+ *               yearOrPeriod:
+ *                 type: string
+ *               shortDescription:
+ *                 type: string
+ *                 maxLength: 500
+ *               fullDescription:
+ *                 type: string
+ *               tags:
+ *                 type: string
+ *                 description: 'JSON array of tags, e.g., ["ancient", "pottery"]'
+ *                 example: '["ancient", "pottery", "ceremonial"]'
+ *               isActive:
+ *                 type: boolean
+ *               isFeatured:
+ *                 type: boolean
  *               images:
  *                 type: array
  *                 items:
  *                   type: string
  *                   format: binary
+ *                 maxItems: 10
  *               audioNarration:
  *                 type: string
  *                 format: binary
@@ -233,6 +251,44 @@
  *         required: true
  *         schema:
  *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               identificationNumber:
+ *                 type: string
+ *               title:
+ *                 type: string
+ *               country:
+ *                 type: string
+ *               category:
+ *                 type: string
+ *               era:
+ *                 type: string
+ *               yearOrPeriod:
+ *                 type: string
+ *               shortDescription:
+ *                 type: string
+ *               fullDescription:
+ *                 type: string
+ *               tags:
+ *                 type: string
+ *                 description: 'JSON array of tags'
+ *               isActive:
+ *                 type: boolean
+ *               isFeatured:
+ *                 type: boolean
+ *               images:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                   format: binary
+ *               audioNarration:
+ *                 type: string
+ *                 format: binary
  *     responses:
  *       200:
  *         description: Artifact updated successfully

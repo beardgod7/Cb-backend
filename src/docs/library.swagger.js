@@ -4,6 +4,9 @@
  *   schemas:
  *     Book:
  *       type: object
+ *       required:
+ *         - title
+ *         - author
  *       properties:
  *         id:
  *           type: string
@@ -12,26 +15,31 @@
  *           type: string
  *         author:
  *           type: string
- *         isbn:
- *           type: string
- *         publisher:
- *           type: string
- *         publicationYear:
+ *         yearOfPublication:
  *           type: integer
- *         language:
- *           type: string
- *         pages:
- *           type: integer
+ *           minimum: 1000
+ *           maximum: 9999
  *         description:
  *           type: string
- *         categoryId:
- *           type: string
- *         isFeatured:
- *           type: boolean
  *         coverImage:
  *           type: string
- *         availableCopies:
- *           type: integer
+ *         previewPages:
+ *           type: array
+ *           items:
+ *             type: string
+ *         tableOfContents:
+ *           type: string
+ *         isPreviewVisible:
+ *           type: boolean
+ *         isFeatured:
+ *           type: boolean
+ *         isActive:
+ *           type: boolean
+ *         categoryIds:
+ *           type: array
+ *           items:
+ *             type: string
+ *             format: uuid
  *
  * /library/categories:
  *   get:
@@ -246,13 +254,32 @@
  *         multipart/form-data:
  *           schema:
  *             type: object
+ *             required:
+ *               - title
+ *               - author
  *             properties:
  *               title:
  *                 type: string
  *               author:
  *                 type: string
- *               isbn:
+ *               yearOfPublication:
+ *                 type: integer
+ *                 minimum: 1000
+ *                 maximum: 9999
+ *               description:
  *                 type: string
+ *               tableOfContents:
+ *                 type: string
+ *               isPreviewVisible:
+ *                 type: boolean
+ *               isFeatured:
+ *                 type: boolean
+ *               isActive:
+ *                 type: boolean
+ *               categoryIds:
+ *                 type: string
+ *                 description: 'JSON array of category UUIDs, e.g., ["uuid1", "uuid2"]'
+ *                 example: '["123e4567-e89b-12d3-a456-426614174000"]'
  *               coverImage:
  *                 type: string
  *                 format: binary
@@ -261,6 +288,7 @@
  *                 items:
  *                   type: string
  *                   format: binary
+ *                 maxItems: 20
  *     responses:
  *       201:
  *         description: Book created successfully
