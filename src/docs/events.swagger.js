@@ -4,6 +4,9 @@
  *   schemas:
  *     Event:
  *       type: object
+ *       required:
+ *         - Description
+ *         - Location
  *       properties:
  *         EventId:
  *           type: string
@@ -22,14 +25,13 @@
  *           type: array
  *           items:
  *             type: string
- *             format: date
  *         EventHighlights:
  *           type: array
  *           items:
  *             type: string
  *         Status:
  *           type: string
- *           enum: [upcoming, past, cancelled]
+ *           enum: [past, upcoming]
  *         isPublished:
  *           type: boolean
  *         registrationEnabled:
@@ -41,9 +43,12 @@
  *           enum: [online, offline, hybrid]
  *         maxAttendees:
  *           type: integer
+ *           minimum: 1
+ *           nullable: true
  *         registrationDeadline:
  *           type: string
  *           format: date-time
+ *           nullable: true
  *         Images:
  *           type: array
  *           items:

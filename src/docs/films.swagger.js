@@ -4,40 +4,55 @@
  *   schemas:
  *     Film:
  *       type: object
+ *       required:
+ *         - title
+ *         - fullDescription
+ *         - category
+ *         - ticketPrice
  *       properties:
  *         id:
  *           type: string
  *           format: uuid
  *         title:
  *           type: string
- *         description:
+ *         shortDescription:
  *           type: string
- *         director:
+ *           maxLength: 500
+ *         fullDescription:
  *           type: string
- *         genre:
- *           type: array
- *           items:
- *             type: string
+ *         yearOfRecording:
+ *           type: integer
+ *           minimum: 1900
+ *           maximum: 2100
  *         duration:
- *           type: integer
- *         releaseYear:
- *           type: integer
- *         language:
  *           type: string
- *         subtitles:
- *           type: array
- *           items:
- *             type: string
- *         rating:
+ *         category:
  *           type: string
- *         isFeatured:
- *           type: boolean
+ *         country:
+ *           type: string
+ *         festivalYear:
+ *           type: string
  *         coverImage:
  *           type: string
- *         thumbnails:
+ *         thumbnailGallery:
  *           type: array
  *           items:
  *             type: string
+ *         previewVideo:
+ *           type: string
+ *         fullVideo:
+ *           type: string
+ *         ticketPrice:
+ *           type: number
+ *           minimum: 0
+ *         tags:
+ *           type: array
+ *           items:
+ *             type: string
+ *         isActive:
+ *           type: boolean
+ *         isFeatured:
+ *           type: boolean
  *
  * /films/films:
  *   get:
@@ -46,12 +61,6 @@
  *     responses:
  *       200:
  *         description: Films retrieved successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Film'
  *
  * /films/films/featured:
  *   get:
@@ -102,16 +111,20 @@
  *           schema:
  *             type: object
  *             required:
- *               - name
+ *               - fullName
  *               - email
+ *               - phoneNumber
  *               - message
  *             properties:
- *               name:
+ *               filmId:
+ *                 type: string
+ *                 format: uuid
+ *               fullName:
  *                 type: string
  *               email:
  *                 type: string
  *                 format: email
- *               phone:
+ *               phoneNumber:
  *                 type: string
  *               message:
  *                 type: string
@@ -132,13 +145,30 @@
  *           schema:
  *             type: object
  *             required:
+ *               - filmId
  *               - screeningSlotId
+ *               - fullName
+ *               - email
+ *               - phoneNumber
  *               - numberOfSeats
  *             properties:
+ *               filmId:
+ *                 type: string
+ *                 format: uuid
  *               screeningSlotId:
+ *                 type: string
+ *                 format: uuid
+ *               fullName:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *                 format: email
+ *               phoneNumber:
  *                 type: string
  *               numberOfSeats:
  *                 type: integer
+ *                 minimum: 1
+ *                 maximum: 10
  *     responses:
  *       201:
  *         description: Booking created successfully
@@ -187,13 +217,30 @@
  *         multipart/form-data:
  *           schema:
  *             type: object
+ *             required:
+ *               - title
+ *               - fullDescription
+ *               - category
+ *               - ticketPrice
  *             properties:
  *               title:
  *                 type: string
- *               description:
+ *               shortDescription:
  *                 type: string
- *               director:
+ *               fullDescription:
  *                 type: string
+ *               yearOfRecording:
+ *                 type: integer
+ *               duration:
+ *                 type: string
+ *               category:
+ *                 type: string
+ *               country:
+ *                 type: string
+ *               festivalYear:
+ *                 type: string
+ *               ticketPrice:
+ *                 type: number
  *               coverImage:
  *                 type: string
  *                 format: binary
@@ -221,12 +268,6 @@
  *         required: true
  *         schema:
  *           type: string
- *     requestBody:
- *       required: true
- *       content:
- *         multipart/form-data:
- *           schema:
- *             type: object
  *     responses:
  *       200:
  *         description: Film updated successfully
@@ -257,19 +298,26 @@
  *         application/json:
  *           schema:
  *             type: object
+ *             required:
+ *               - filmId
+ *               - screeningDate
+ *               - startTime
  *             properties:
  *               filmId:
  *                 type: string
+ *                 format: uuid
+ *               screeningDate:
+ *                 type: string
+ *                 format: date
  *               startTime:
  *                 type: string
- *                 format: date-time
  *               endTime:
  *                 type: string
- *                 format: date-time
- *               availableSeats:
+ *               maxSeats:
  *                 type: integer
- *               price:
- *                 type: number
+ *                 minimum: 1
+ *               isAvailable:
+ *                 type: boolean
  *     responses:
  *       201:
  *         description: Screening slot created successfully
@@ -326,15 +374,6 @@
  *         required: true
  *         schema:
  *           type: string
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               status:
- *                 type: string
  *     responses:
  *       200:
  *         description: Booking status updated successfully

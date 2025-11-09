@@ -36,21 +36,22 @@
  *             required:
  *               - email
  *               - password
- *               - firstName
- *               - lastName
  *             properties:
+ *               username:
+ *                 type: string
  *               email:
  *                 type: string
  *                 format: email
  *               password:
  *                 type: string
  *                 format: password
- *               firstName:
- *                 type: string
- *               lastName:
- *                 type: string
+ *                 minLength: 8
  *               phoneNumber:
  *                 type: string
+ *               role:
+ *                 type: string
+ *                 enum: [Admin, User, Driver, TruckOwner]
+ *                 default: User
  *     responses:
  *       201:
  *         description: User registered successfully
@@ -77,15 +78,16 @@
  *           schema:
  *             type: object
  *             required:
- *               - email
+ *               - identifier
  *               - password
  *             properties:
- *               email:
+ *               identifier:
  *                 type: string
- *                 format: email
+ *                 description: Email or username
  *               password:
  *                 type: string
  *                 format: password
+ *                 minLength: 8
  *     responses:
  *       200:
  *         description: Login successful
@@ -126,9 +128,9 @@
  *           schema:
  *             type: object
  *             required:
- *               - refreshToken
+ *               - refresh_token
  *             properties:
- *               refreshToken:
+ *               refresh_token:
  *                 type: string
  *     responses:
  *       200:
@@ -209,13 +211,14 @@
  *             type: object
  *             required:
  *               - token
- *               - newPassword
+ *               - password
  *             properties:
  *               token:
  *                 type: string
- *               newPassword:
+ *               password:
  *                 type: string
  *                 format: password
+ *                 minLength: 6
  *     responses:
  *       200:
  *         description: Password reset successfully

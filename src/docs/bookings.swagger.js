@@ -6,33 +6,28 @@
  *       type: object
  *       required:
  *         - EventId
- *         - FirstName
- *         - LastName
- *         - Email
- *         - PhoneNumber
- *         - registrationType
  *       properties:
  *         EventId:
  *           type: string
  *           format: uuid
  *         FirstName:
  *           type: string
+ *           maxLength: 255
  *         LastName:
  *           type: string
+ *           maxLength: 255
  *         Email:
  *           type: string
  *           format: email
  *         PhoneNumber:
  *           type: string
+ *           maxLength: 255
  *         registrationType:
  *           type: string
  *           enum: [Register, Volunteer, Sponsor]
  *         attendanceStatus:
  *           type: string
  *           enum: [registered, confirmed, attended, cancelled]
- *         metadata:
- *           type: object
- *           additionalProperties: true
  *
  * /eventbooking/book:
  *   post:
