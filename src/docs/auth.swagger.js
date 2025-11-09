@@ -50,7 +50,7 @@
  *                 type: string
  *               role:
  *                 type: string
- *                 enum: [Admin, User, Driver, TruckOwner]
+ *                 enum: [Admin, User]
  *                 default: User
  *     responses:
  *       201:
