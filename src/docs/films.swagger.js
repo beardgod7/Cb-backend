@@ -227,10 +227,13 @@
  *                 type: string
  *               shortDescription:
  *                 type: string
+ *                 maxLength: 500
  *               fullDescription:
  *                 type: string
  *               yearOfRecording:
  *                 type: integer
+ *                 minimum: 1900
+ *                 maximum: 2100
  *               duration:
  *                 type: string
  *               category:
@@ -241,6 +244,17 @@
  *                 type: string
  *               ticketPrice:
  *                 type: number
+ *                 minimum: 0
+ *               tags:
+ *                 type: string
+ *                 description: 'JSON array of tags, e.g., ["documentary", "historical"]'
+ *                 example: '["documentary", "historical"]'
+ *               isActive:
+ *                 type: boolean
+ *                 default: true
+ *               isFeatured:
+ *                 type: boolean
+ *                 default: false
  *               coverImage:
  *                 type: string
  *                 format: binary
@@ -250,6 +264,9 @@
  *                   type: string
  *                   format: binary
  *               previewVideo:
+ *                 type: string
+ *                 format: binary
+ *               fullVideo:
  *                 type: string
  *                 format: binary
  *     responses:
@@ -268,6 +285,56 @@
  *         required: true
  *         schema:
  *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *               shortDescription:
+ *                 type: string
+ *                 maxLength: 500
+ *               fullDescription:
+ *                 type: string
+ *               yearOfRecording:
+ *                 type: integer
+ *                 minimum: 1900
+ *                 maximum: 2100
+ *               duration:
+ *                 type: string
+ *               category:
+ *                 type: string
+ *               country:
+ *                 type: string
+ *               festivalYear:
+ *                 type: string
+ *               ticketPrice:
+ *                 type: number
+ *                 minimum: 0
+ *               tags:
+ *                 type: string
+ *                 description: 'JSON array of tags'
+ *               isActive:
+ *                 type: boolean
+ *               isFeatured:
+ *                 type: boolean
+ *               coverImage:
+ *                 type: string
+ *                 format: binary
+ *               thumbnails:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                   format: binary
+ *               previewVideo:
+ *                 type: string
+ *                 format: binary
+ *               fullVideo:
+ *                 type: string
+ *                 format: binary
  *     responses:
  *       200:
  *         description: Film updated successfully

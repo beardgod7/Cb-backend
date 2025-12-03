@@ -4,48 +4,72 @@
  *   schemas:
  *     Tour:
  *       type: object
+ *       required:
+ *         - title
+ *         - fullDescription
+ *         - pricePerTicket
+ *         - meetingPoint
+ *         - availableDays
  *       properties:
  *         id:
  *           type: string
  *           format: uuid
  *         title:
  *           type: string
- *         description:
+ *         shortDescription:
  *           type: string
- *         destination:
+ *         fullDescription:
  *           type: string
+ *         pricePerTicket:
+ *           type: number
  *         duration:
  *           type: string
- *         price:
- *           type: number
- *         maxParticipants:
- *           type: integer
- *         difficulty:
+ *         startTime:
  *           type: string
- *           enum: [easy, moderate, challenging]
- *         includes:
+ *         meetingPoint:
+ *           type: string
+ *         mapLink:
+ *           type: string
+ *         availableDays:
  *           type: array
  *           items:
  *             type: string
- *         excludes:
- *           type: array
- *           items:
- *             type: string
+ *             enum: [Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday]
+ *           minItems: 1
+ *           maxItems: 2
  *         images:
  *           type: array
  *           items:
  *             type: string
+ *         isActive:
+ *           type: boolean
+ *         createdBy:
+ *           type: string
+ *           format: uuid
  *     Trip:
  *       type: object
+ *       required:
+ *         - title
+ *         - destination
+ *         - destinationType
+ *         - fullDescription
+ *         - startDate
+ *         - endDate
+ *         - pricePerPerson
  *       properties:
  *         id:
  *           type: string
  *           format: uuid
  *         title:
  *           type: string
- *         description:
- *           type: string
  *         destination:
+ *           type: string
+ *         destinationType:
+ *           type: string
+ *           enum: [local, international]
+ *         shortDescription:
+ *           type: string
+ *         fullDescription:
  *           type: string
  *         startDate:
  *           type: string
@@ -53,14 +77,38 @@
  *         endDate:
  *           type: string
  *           format: date
- *         price:
+ *         pricePerPerson:
  *           type: number
+ *         itinerary:
+ *           type: array
+ *           items:
+ *             type: object
+ *             properties:
+ *               day:
+ *                 type: integer
+ *               title:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               activities:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *         mapLink:
+ *           type: string
  *         maxParticipants:
+ *           type: integer
+ *         currentBookings:
  *           type: integer
  *         images:
  *           type: array
  *           items:
  *             type: string
+ *         isActive:
+ *           type: boolean
+ *         createdBy:
+ *           type: string
+ *           format: uuid
  *
  * /travels/tours:
  *   get:
@@ -148,16 +196,28 @@
  *             type: object
  *             required:
  *               - tourId
- *               - numberOfPeople
- *               - preferredDate
+ *               - fullName
+ *               - email
+ *               - phoneNumber
+ *               - selectedDate
+ *               - numberOfTickets
  *             properties:
  *               tourId:
  *                 type: string
- *               numberOfPeople:
- *                 type: integer
- *               preferredDate:
+ *                 format: uuid
+ *               fullName:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *                 format: email
+ *               phoneNumber:
+ *                 type: string
+ *               selectedDate:
  *                 type: string
  *                 format: date
+ *               numberOfTickets:
+ *                 type: integer
+ *                 minimum: 1
  *     responses:
  *       201:
  *         description: Tour booked successfully
@@ -190,20 +250,46 @@
  *         multipart/form-data:
  *           schema:
  *             type: object
+ *             required:
+ *               - title
+ *               - fullDescription
+ *               - pricePerTicket
+ *               - meetingPoint
+ *               - availableDays
  *             properties:
  *               title:
  *                 type: string
- *               description:
+ *               shortDescription:
  *                 type: string
- *               destination:
+ *               fullDescription:
  *                 type: string
- *               price:
+ *               pricePerTicket:
  *                 type: number
+ *                 minimum: 0
+ *               duration:
+ *                 type: string
+ *                 description: 'Duration of the tour (e.g., "2 hours", "Half day")'
+ *               startTime:
+ *                 type: string
+ *                 description: 'Tour start time (e.g., "09:00:00")'
+ *               meetingPoint:
+ *                 type: string
+ *               mapLink:
+ *                 type: string
+ *                 format: uri
+ *               availableDays:
+ *                 type: string
+ *                 description: 'JSON array of available days (1-2 days), e.g., ["Monday", "Friday"]'
+ *                 example: '["Monday", "Friday"]'
+ *               isActive:
+ *                 type: boolean
+ *                 default: true
  *               images:
  *                 type: array
  *                 items:
  *                   type: string
  *                   format: binary
+ *                 maxItems: 10
  *     responses:
  *       201:
  *         description: Tour created successfully
@@ -220,6 +306,42 @@
  *         required: true
  *         schema:
  *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *               shortDescription:
+ *                 type: string
+ *               fullDescription:
+ *                 type: string
+ *               pricePerTicket:
+ *                 type: number
+ *                 minimum: 0
+ *               duration:
+ *                 type: string
+ *               startTime:
+ *                 type: string
+ *               meetingPoint:
+ *                 type: string
+ *               mapLink:
+ *                 type: string
+ *                 format: uri
+ *               availableDays:
+ *                 type: string
+ *                 description: 'JSON array of available days (1-2 days)'
+ *               isActive:
+ *                 type: boolean
+ *               images:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                   format: binary
+ *                 maxItems: 10
  *     responses:
  *       200:
  *         description: Tour updated successfully
@@ -395,12 +517,24 @@
  *             type: object
  *             required:
  *               - tripId
- *               - numberOfPeople
+ *               - fullName
+ *               - email
+ *               - phoneNumber
+ *               - numberOfTickets
  *             properties:
  *               tripId:
  *                 type: string
- *               numberOfPeople:
+ *                 format: uuid
+ *               fullName:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *                 format: email
+ *               phoneNumber:
+ *                 type: string
+ *               numberOfTickets:
  *                 type: integer
+ *                 minimum: 1
  *     responses:
  *       201:
  *         description: Trip booked successfully
@@ -433,12 +567,25 @@
  *         multipart/form-data:
  *           schema:
  *             type: object
+ *             required:
+ *               - title
+ *               - destination
+ *               - destinationType
+ *               - fullDescription
+ *               - startDate
+ *               - endDate
+ *               - pricePerPerson
  *             properties:
  *               title:
  *                 type: string
- *               description:
- *                 type: string
  *               destination:
+ *                 type: string
+ *               destinationType:
+ *                 type: string
+ *                 enum: [local, international]
+ *               shortDescription:
+ *                 type: string
+ *               fullDescription:
  *                 type: string
  *               startDate:
  *                 type: string
@@ -446,13 +593,28 @@
  *               endDate:
  *                 type: string
  *                 format: date
- *               price:
+ *               pricePerPerson:
  *                 type: number
+ *                 minimum: 0
+ *               itinerary:
+ *                 type: string
+ *                 description: 'JSON array of itinerary items with day, title, description, and activities'
+ *                 example: '[{"day": 1, "title": "Arrival", "description": "Check-in and welcome dinner", "activities": ["Check-in", "Dinner"]}]'
+ *               mapLink:
+ *                 type: string
+ *                 format: uri
+ *               maxParticipants:
+ *                 type: integer
+ *                 minimum: 1
+ *               isActive:
+ *                 type: boolean
+ *                 default: true
  *               images:
  *                 type: array
  *                 items:
  *                   type: string
  *                   format: binary
+ *                 maxItems: 10
  *     responses:
  *       201:
  *         description: Trip created successfully
@@ -469,6 +631,50 @@
  *         required: true
  *         schema:
  *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *               destination:
+ *                 type: string
+ *               destinationType:
+ *                 type: string
+ *                 enum: [local, international]
+ *               shortDescription:
+ *                 type: string
+ *               fullDescription:
+ *                 type: string
+ *               startDate:
+ *                 type: string
+ *                 format: date
+ *               endDate:
+ *                 type: string
+ *                 format: date
+ *               pricePerPerson:
+ *                 type: number
+ *                 minimum: 0
+ *               itinerary:
+ *                 type: string
+ *                 description: 'JSON array of itinerary items'
+ *               mapLink:
+ *                 type: string
+ *                 format: uri
+ *               maxParticipants:
+ *                 type: integer
+ *                 minimum: 1
+ *               isActive:
+ *                 type: boolean
+ *               images:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                   format: binary
+ *                 maxItems: 10
  *     responses:
  *       200:
  *         description: Trip updated successfully
