@@ -16,20 +16,6 @@ const swaggerSpec = require("./config/swagger");
 const app = express();
 const server = http.createServer(app);
 
-// Setup Socket.io with CORS
-// const io = socketIo(server, {
-//   cors: {
-//     origin: ["http://localhost:3000"],
-//     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
-//     credentials: false,
-//   },
-// });
-
-// // Attach io to requests
-// app.use((req, res, next) => {
-//   req.io = io;
-//   next();
-// });
 
 // Promethues connection
 // Create and register Prometheus registry
