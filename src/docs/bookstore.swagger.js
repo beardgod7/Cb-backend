@@ -68,7 +68,7 @@
  *           items:
  *             type: string
  *           description: List of editors
- *         previewPages:
+ *         previewContent:
  *           oneOf:
  *             - type: array
  *               items:
@@ -430,7 +430,7 @@
  *               previewType:
  *                 type: string
  *                 enum: [text, images, pdf]
- *               previewPages:
+ *               previewPagesText:
  *                 type: string
  *                 description: JSON array for text type preview pages
  *               categoryIds:
@@ -444,7 +444,7 @@
  *                 type: string
  *                 format: binary
  *                 description: Cover page image file
- *               previewPages:
+ *               previewPagesImages:
  *                 type: array
  *                 items:
  *                   type: string
@@ -517,7 +517,7 @@
  *               previewType:
  *                 type: string
  *                 enum: [text, images, pdf]
- *               previewPages:
+ *               previewPagesText:
  *                 type: string
  *                 description: JSON array for text type preview pages
  *               categoryIds:
@@ -531,7 +531,7 @@
  *                 type: string
  *                 format: binary
  *                 description: Cover page image file
- *               previewPages:
+ *               previewPagesImages:
  *                 type: array
  *                 items:
  *                   type: string

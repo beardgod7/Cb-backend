@@ -55,7 +55,7 @@
  *           type: string
  *           format: uri
  *           description: Cover image URL
- *         previewPages:
+ *         previewContent:
  *           oneOf:
  *             - type: array
  *               items:
@@ -76,7 +76,7 @@
  *           type: string
  *           enum: [text, images, pdf]
  *           description: Type of preview pages
- *         tableOfContents:
+ *         tableOfContentsContent:
  *           oneOf:
  *             - type: array
  *               items:
@@ -92,7 +92,7 @@
  *           type: string
  *           enum: [text, images, pdf]
  *           description: Type of table of contents
- *         abstractPreview:
+ *         abstractPreviewContent:
  *           oneOf:
  *             - type: string
  *             - type: array
@@ -106,7 +106,7 @@
  *           type: string
  *           enum: [text, images, pdf]
  *           description: Type of abstract preview
- *         otherPreviewPages:
+ *         otherPreviewContent:
  *           oneOf:
  *             - type: array
  *               items:
@@ -470,25 +470,25 @@
  *               previewPagesType:
  *                 type: string
  *                 enum: [text, images, pdf]
- *               previewPages:
+ *               previewPagesText:
  *                 type: string
  *                 description: JSON array for text type preview pages
  *               tableOfContentsType:
  *                 type: string
  *                 enum: [text, images, pdf]
- *               tableOfContents:
+ *               tableOfContentsText:
  *                 type: string
  *                 description: JSON array for text type table of contents
  *               abstractPreviewType:
  *                 type: string
  *                 enum: [text, images, pdf]
- *               abstractPreview:
+ *               abstractPreviewText:
  *                 type: string
  *                 description: Text or JSON for abstract preview
  *               otherPreviewPagesType:
  *                 type: string
  *                 enum: [text, images, pdf]
- *               otherPreviewPages:
+ *               otherPreviewPagesText:
  *                 type: string
  *                 description: JSON for other preview pages
  *               scheduledVisitDate:
@@ -509,7 +509,7 @@
  *                 type: string
  *                 format: binary
  *                 description: Cover image file
- *               previewPages:
+ *               previewPagesImages:
  *                 type: array
  *                 items:
  *                   type: string
@@ -519,7 +519,7 @@
  *                 type: string
  *                 format: binary
  *                 description: Preview pages PDF file (for pdf type)
- *               tableOfContents:
+ *               tableOfContentsImages:
  *                 type: array
  *                 items:
  *                   type: string
@@ -529,7 +529,7 @@
  *                 type: string
  *                 format: binary
  *                 description: Table of contents PDF file (for pdf type)
- *               abstractPreview:
+ *               abstractPreviewImages:
  *                 type: array
  *                 items:
  *                   type: string
@@ -539,7 +539,7 @@
  *                 type: string
  *                 format: binary
  *                 description: Abstract preview PDF file (for pdf type)
- *               otherPreviewPages:
+ *               otherPreviewPagesImages:
  *                 type: array
  *                 items:
  *                   type: string
@@ -602,25 +602,25 @@
  *               previewPagesType:
  *                 type: string
  *                 enum: [text, images, pdf]
- *               previewPages:
+ *               previewPagesText:
  *                 type: string
  *                 description: JSON array for text type preview pages
  *               tableOfContentsType:
  *                 type: string
  *                 enum: [text, images, pdf]
- *               tableOfContents:
+ *               tableOfContentsText:
  *                 type: string
  *                 description: JSON array for text type table of contents
  *               abstractPreviewType:
  *                 type: string
  *                 enum: [text, images, pdf]
- *               abstractPreview:
+ *               abstractPreviewText:
  *                 type: string
  *                 description: Text or JSON for abstract preview
  *               otherPreviewPagesType:
  *                 type: string
  *                 enum: [text, images, pdf]
- *               otherPreviewPages:
+ *               otherPreviewPagesText:
  *                 type: string
  *                 description: JSON for other preview pages
  *               scheduledVisitDate:
@@ -641,7 +641,7 @@
  *                 type: string
  *                 format: binary
  *                 description: Cover image file
- *               previewPages:
+ *               previewPagesImages:
  *                 type: array
  *                 items:
  *                   type: string
@@ -651,7 +651,7 @@
  *                 type: string
  *                 format: binary
  *                 description: Preview pages PDF file (for pdf type)
- *               tableOfContents:
+ *               tableOfContentsImages:
  *                 type: array
  *                 items:
  *                   type: string
@@ -661,7 +661,7 @@
  *                 type: string
  *                 format: binary
  *                 description: Table of contents PDF file (for pdf type)
- *               abstractPreview:
+ *               abstractPreviewImages:
  *                 type: array
  *                 items:
  *                   type: string
@@ -671,7 +671,7 @@
  *                 type: string
  *                 format: binary
  *                 description: Abstract preview PDF file (for pdf type)
- *               otherPreviewPages:
+ *               otherPreviewPagesImages:
  *                 type: array
  *                 items:
  *                   type: string
