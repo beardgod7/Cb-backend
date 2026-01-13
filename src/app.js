@@ -7,6 +7,10 @@ const http = require("http");
 const socketIo = require("socket.io");
 require("dotenv").config();
 const routes = require("./routes/index");
+
+// Import models to ensure they are registered with Sequelize
+require("./features/Bookstore/model");
+
 const { errorHandler } = require("./middleware/errorhandler");
 const client = require("prom-client");
 const responseTime = require("response-time");

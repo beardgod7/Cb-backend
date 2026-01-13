@@ -147,8 +147,12 @@ const options = {
         description: "Film and screening management",
       },
       {
-        name: "Library",
-        description: "Library books and reading visit management",
+        name: "Library - Public",
+        description: "Public library browsing and reading visit booking",
+      },
+      {
+        name: "Library - Admin",
+        description: "Library management endpoints (Admin)",
       },
       {
         name: "Museum",
@@ -165,6 +169,14 @@ const options = {
       {
         name: "Payment",
         description: "Payment processing endpoints",
+      },
+      {
+        name: "Bookstore - Public",
+        description: "Public bookstore browsing endpoints",
+      },
+      {
+        name: "Bookstore - Admin",
+        description: "Bookstore management endpoints (Admin)",
       },
     ],
   },

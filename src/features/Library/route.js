@@ -16,6 +16,7 @@ router.get("/categories/:id", libraryController.getCategoryById);
 // Books
 router.get("/books", libraryController.getAllBooks);
 router.get("/books/featured", libraryController.getFeaturedBooks);
+router.get("/books/popular", libraryController.getMostPopularBooks);
 router.get("/books/:id", libraryController.getBookById);
 router.get("/books/category/:categoryId", libraryController.getBooksByCategory);
 
@@ -63,6 +64,13 @@ router.post(
   upload.fields([
     { name: "coverImage", maxCount: 1 },
     { name: "previewPages", maxCount: 20 },
+    { name: "previewPagesPdf", maxCount: 1 },
+    { name: "tableOfContents", maxCount: 20 },
+    { name: "tableOfContentsPdf", maxCount: 1 },
+    { name: "abstractPreview", maxCount: 20 },
+    { name: "abstractPreviewPdf", maxCount: 1 },
+    { name: "otherPreviewPages", maxCount: 20 },
+    { name: "otherPreviewPagesPdf", maxCount: 1 },
   ]),
   libraryController.createBook
 );
@@ -72,6 +80,13 @@ router.put(
   upload.fields([
     { name: "coverImage", maxCount: 1 },
     { name: "previewPages", maxCount: 20 },
+    { name: "previewPagesPdf", maxCount: 1 },
+    { name: "tableOfContents", maxCount: 20 },
+    { name: "tableOfContentsPdf", maxCount: 1 },
+    { name: "abstractPreview", maxCount: 20 },
+    { name: "abstractPreviewPdf", maxCount: 1 },
+    { name: "otherPreviewPages", maxCount: 20 },
+    { name: "otherPreviewPagesPdf", maxCount: 1 },
   ]),
   libraryController.updateBook
 );

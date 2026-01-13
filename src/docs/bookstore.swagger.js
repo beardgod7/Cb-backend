@@ -2,7 +2,7 @@
  * @swagger
  * components:
  *   schemas:
- *     LibraryCategory:
+ *     BookstoreCategory:
  *       type: object
  *       required:
  *         - name
@@ -27,34 +27,47 @@
  *           type: string
  *           format: date-time
  * 
- *     LibraryBook:
+ *     BookstoreBook:
  *       type: object
  *       required:
- *         - title
  *         - author
+ *         - title
+ *         - price
  *       properties:
  *         id:
  *           type: string
  *           format: uuid
  *           description: Unique identifier for the book
- *         title:
- *           type: string
- *           description: Book title
  *         author:
  *           type: string
  *           description: Book author
- *         yearOfPublication:
+ *         title:
+ *           type: string
+ *           description: Book title
+ *         price:
+ *           type: number
+ *           format: decimal
+ *           description: Book price
+ *         shortDescription:
+ *           type: string
+ *           description: Short description of the book
+ *         longDescription:
+ *           type: string
+ *           description: Detailed description of the book
+ *         numberOfChapters:
  *           type: integer
- *           minimum: 1000
- *           maximum: 9999
- *           description: Year the book was published
- *         description:
- *           type: string
- *           description: Book description
- *         coverImage:
- *           type: string
- *           format: uri
- *           description: Cover image URL
+ *           description: Number of chapters in the book
+ *         numberOfPages:
+ *           type: integer
+ *           description: Number of pages in the book
+ *         numberOfParts:
+ *           type: integer
+ *           description: Number of parts in the book
+ *         editors:
+ *           type: array
+ *           items:
+ *             type: string
+ *           description: List of editors
  *         previewPages:
  *           oneOf:
  *             - type: array
@@ -72,72 +85,20 @@
  *             - type: string
  *               format: uri
  *           description: Preview pages (text objects, image URLs, or PDF URL)
- *         previewPagesType:
+ *         previewType:
  *           type: string
  *           enum: [text, images, pdf]
  *           description: Type of preview pages
- *         tableOfContents:
- *           oneOf:
- *             - type: array
- *               items:
- *                 type: string
- *             - type: array
- *               items:
- *                 type: string
- *                 format: uri
- *             - type: string
- *               format: uri
- *           description: Table of contents (text array, image URLs, or PDF URL)
- *         tableOfContentsType:
+ *         coverPage:
  *           type: string
- *           enum: [text, images, pdf]
- *           description: Type of table of contents
- *         abstractPreview:
- *           oneOf:
- *             - type: string
- *             - type: array
- *               items:
- *                 type: string
- *                 format: uri
- *             - type: string
- *               format: uri
- *           description: Abstract preview (text, image URLs, or PDF URL)
- *         abstractPreviewType:
- *           type: string
- *           enum: [text, images, pdf]
- *           description: Type of abstract preview
- *         otherPreviewPages:
- *           oneOf:
- *             - type: array
- *               items:
- *                 type: object
- *             - type: array
- *               items:
- *                 type: string
- *                 format: uri
- *             - type: string
- *               format: uri
- *           description: Other preview pages content
- *         otherPreviewPagesType:
- *           type: string
- *           enum: [text, images, pdf]
- *           description: Type of other preview pages
- *         scheduledVisitDate:
- *           type: string
- *           format: date
- *           description: Scheduled date for library visit
- *         isPreviewVisible:
- *           type: boolean
- *           description: Whether preview is visible
- *         isFeatured:
- *           type: boolean
- *           description: Whether the book is featured
- *         isMostPopular:
- *           type: boolean
- *           description: Whether the book is most popular
+ *           format: uri
+ *           description: Cover page image URL
  *         isActive:
  *           type: boolean
  *           description: Whether the book is active
+ *         isFeatured:
+ *           type: boolean
+ *           description: Whether the book is featured
  *         createdBy:
  *           type: string
  *           format: uuid
@@ -145,7 +106,7 @@
  *         categories:
  *           type: array
  *           items:
- *             $ref: '#/components/schemas/LibraryCategory'
+ *             $ref: '#/components/schemas/BookstoreCategory'
  *         createdAt:
  *           type: string
  *           format: date-time
@@ -156,10 +117,10 @@
 
 /**
  * @swagger
- * /api/library/categories:
+ * /api/bookstore/categories:
  *   get:
- *     summary: Get all library categories
- *     tags: [Library - Public]
+ *     summary: Get all bookstore categories
+ *     tags: [Bookstore - Public]
  *     responses:
  *       200:
  *         description: Categories retrieved successfully
@@ -173,15 +134,15 @@
  *                 data:
  *                   type: array
  *                   items:
- *                     $ref: '#/components/schemas/LibraryCategory'
+ *                     $ref: '#/components/schemas/BookstoreCategory'
  */
 
 /**
  * @swagger
- * /api/library/categories/{id}:
+ * /api/bookstore/categories/{id}:
  *   get:
- *     summary: Get library category by ID
- *     tags: [Library - Public]
+ *     summary: Get bookstore category by ID
+ *     tags: [Bookstore - Public]
  *     parameters:
  *       - in: path
  *         name: id
@@ -200,17 +161,17 @@
  *                 message:
  *                   type: string
  *                 data:
- *                   $ref: '#/components/schemas/LibraryCategory'
+ *                   $ref: '#/components/schemas/BookstoreCategory'
  *       404:
  *         description: Category not found
  */
 
 /**
  * @swagger
- * /api/library/books:
+ * /api/bookstore/books:
  *   get:
- *     summary: Get all library books
- *     tags: [Library - Public]
+ *     summary: Get all bookstore books
+ *     tags: [Bookstore - Public]
  *     parameters:
  *       - in: query
  *         name: categoryId
@@ -228,6 +189,16 @@
  *         schema:
  *           type: boolean
  *         description: Filter featured books
+ *       - in: query
+ *         name: minPrice
+ *         schema:
+ *           type: number
+ *         description: Minimum price filter
+ *       - in: query
+ *         name: maxPrice
+ *         schema:
+ *           type: number
+ *         description: Maximum price filter
  *     responses:
  *       200:
  *         description: Books retrieved successfully
@@ -241,15 +212,15 @@
  *                 data:
  *                   type: array
  *                   items:
- *                     $ref: '#/components/schemas/LibraryBook'
+ *                     $ref: '#/components/schemas/BookstoreBook'
  */
 
 /**
  * @swagger
- * /api/library/books/featured:
+ * /api/bookstore/books/featured:
  *   get:
- *     summary: Get featured library books
- *     tags: [Library - Public]
+ *     summary: Get featured bookstore books
+ *     tags: [Bookstore - Public]
  *     responses:
  *       200:
  *         description: Featured books retrieved successfully
@@ -263,37 +234,15 @@
  *                 data:
  *                   type: array
  *                   items:
- *                     $ref: '#/components/schemas/LibraryBook'
+ *                     $ref: '#/components/schemas/BookstoreBook'
  */
 
 /**
  * @swagger
- * /api/library/books/popular:
+ * /api/bookstore/books/{id}:
  *   get:
- *     summary: Get most popular library books
- *     tags: [Library - Public]
- *     responses:
- *       200:
- *         description: Most popular books retrieved successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                 data:
- *                   type: array
- *                   items:
- *                     $ref: '#/components/schemas/LibraryBook'
- */
-
-/**
- * @swagger
- * /api/library/books/{id}:
- *   get:
- *     summary: Get library book by ID
- *     tags: [Library - Public]
+ *     summary: Get bookstore book by ID
+ *     tags: [Bookstore - Public]
  *     parameters:
  *       - in: path
  *         name: id
@@ -312,17 +261,17 @@
  *                 message:
  *                   type: string
  *                 data:
- *                   $ref: '#/components/schemas/LibraryBook'
+ *                   $ref: '#/components/schemas/BookstoreBook'
  *       404:
  *         description: Book not found
  */
 
 /**
  * @swagger
- * /api/library/books/category/{categoryId}:
+ * /api/bookstore/books/category/{categoryId}:
  *   get:
  *     summary: Get books by category
- *     tags: [Library - Public]
+ *     tags: [Bookstore - Public]
  *     parameters:
  *       - in: path
  *         name: categoryId
@@ -343,15 +292,15 @@
  *                 data:
  *                   type: array
  *                   items:
- *                     $ref: '#/components/schemas/LibraryBook'
+ *                     $ref: '#/components/schemas/BookstoreBook'
  */
 
 /**
  * @swagger
- * /api/library/admin/categories:
+ * /api/bookstore/admin/categories:
  *   post:
- *     summary: Create a new library category (Admin)
- *     tags: [Library - Admin]
+ *     summary: Create a new bookstore category (Admin)
+ *     tags: [Bookstore - Admin]
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -380,7 +329,7 @@
  *                 message:
  *                   type: string
  *                 category:
- *                   $ref: '#/components/schemas/LibraryCategory'
+ *                   $ref: '#/components/schemas/BookstoreCategory'
  *       401:
  *         description: Unauthorized
  *       403:
@@ -389,10 +338,10 @@
 
 /**
  * @swagger
- * /api/library/admin/categories/{id}:
+ * /api/bookstore/admin/categories/{id}:
  *   put:
- *     summary: Update library category (Admin)
- *     tags: [Library - Admin]
+ *     summary: Update bookstore category (Admin)
+ *     tags: [Bookstore - Admin]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -421,8 +370,8 @@
  *       404:
  *         description: Category not found
  *   delete:
- *     summary: Delete library category (Admin)
- *     tags: [Library - Admin]
+ *     summary: Delete bookstore category (Admin)
+ *     tags: [Bookstore - Admin]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -441,10 +390,10 @@
 
 /**
  * @swagger
- * /api/library/admin/books:
+ * /api/bookstore/admin/books:
  *   post:
- *     summary: Create a new library book (Admin)
- *     tags: [Library - Admin]
+ *     summary: Create a new bookstore book (Admin)
+ *     tags: [Bookstore - Admin]
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -454,101 +403,57 @@
  *           schema:
  *             type: object
  *             required:
- *               - title
  *               - author
+ *               - title
+ *               - price
  *             properties:
- *               title:
- *                 type: string
  *               author:
  *                 type: string
- *               yearOfPublication:
- *                 type: integer
- *                 minimum: 1000
- *                 maximum: 9999
- *               description:
+ *               title:
  *                 type: string
- *               previewPagesType:
+ *               price:
+ *                 type: number
+ *                 format: decimal
+ *               shortDescription:
+ *                 type: string
+ *               longDescription:
+ *                 type: string
+ *               numberOfChapters:
+ *                 type: integer
+ *               numberOfPages:
+ *                 type: integer
+ *               numberOfParts:
+ *                 type: integer
+ *               editors:
+ *                 type: string
+ *                 description: JSON array of editor names
+ *               previewType:
  *                 type: string
  *                 enum: [text, images, pdf]
  *               previewPages:
  *                 type: string
  *                 description: JSON array for text type preview pages
- *               tableOfContentsType:
- *                 type: string
- *                 enum: [text, images, pdf]
- *               tableOfContents:
- *                 type: string
- *                 description: JSON array for text type table of contents
- *               abstractPreviewType:
- *                 type: string
- *                 enum: [text, images, pdf]
- *               abstractPreview:
- *                 type: string
- *                 description: Text or JSON for abstract preview
- *               otherPreviewPagesType:
- *                 type: string
- *                 enum: [text, images, pdf]
- *               otherPreviewPages:
- *                 type: string
- *                 description: JSON for other preview pages
- *               scheduledVisitDate:
- *                 type: string
- *                 format: date
  *               categoryIds:
  *                 type: string
  *                 description: JSON array of category IDs
- *               isPreviewVisible:
+ *               isActive:
  *                 type: boolean
  *               isFeatured:
  *                 type: boolean
- *               isMostPopular:
- *                 type: boolean
- *               isActive:
- *                 type: boolean
- *               coverImage:
+ *               coverPage:
  *                 type: string
  *                 format: binary
- *                 description: Cover image file
+ *                 description: Cover page image file
  *               previewPages:
  *                 type: array
  *                 items:
  *                   type: string
  *                   format: binary
  *                 description: Preview page image files (for images type)
- *               previewPagesPdf:
+ *               previewPdf:
  *                 type: string
  *                 format: binary
- *                 description: Preview pages PDF file (for pdf type)
- *               tableOfContents:
- *                 type: array
- *                 items:
- *                   type: string
- *                   format: binary
- *                 description: Table of contents image files (for images type)
- *               tableOfContentsPdf:
- *                 type: string
- *                 format: binary
- *                 description: Table of contents PDF file (for pdf type)
- *               abstractPreview:
- *                 type: array
- *                 items:
- *                   type: string
- *                   format: binary
- *                 description: Abstract preview image files (for images type)
- *               abstractPreviewPdf:
- *                 type: string
- *                 format: binary
- *                 description: Abstract preview PDF file (for pdf type)
- *               otherPreviewPages:
- *                 type: array
- *                 items:
- *                   type: string
- *                   format: binary
- *                 description: Other preview page image files (for images type)
- *               otherPreviewPagesPdf:
- *                 type: string
- *                 format: binary
- *                 description: Other preview pages PDF file (for pdf type)
+ *                 description: Preview PDF file (for pdf type)
  *     responses:
  *       201:
  *         description: Book created successfully
@@ -560,7 +465,7 @@
  *                 message:
  *                   type: string
  *                 book:
- *                   $ref: '#/components/schemas/LibraryBook'
+ *                   $ref: '#/components/schemas/BookstoreBook'
  *       401:
  *         description: Unauthorized
  *       403:
@@ -569,10 +474,10 @@
 
 /**
  * @swagger
- * /api/library/admin/books/{id}:
+ * /api/bookstore/admin/books/{id}:
  *   put:
- *     summary: Update library book (Admin)
- *     tags: [Library - Admin]
+ *     summary: Update bookstore book (Admin)
+ *     tags: [Bookstore - Admin]
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -589,106 +494,61 @@
  *           schema:
  *             type: object
  *             properties:
- *               title:
- *                 type: string
  *               author:
  *                 type: string
- *               yearOfPublication:
- *                 type: integer
- *                 minimum: 1000
- *                 maximum: 9999
- *               description:
+ *               title:
  *                 type: string
- *               previewPagesType:
+ *               price:
+ *                 type: number
+ *                 format: decimal
+ *               shortDescription:
+ *                 type: string
+ *               longDescription:
+ *                 type: string
+ *               numberOfChapters:
+ *                 type: integer
+ *               numberOfPages:
+ *                 type: integer
+ *               numberOfParts:
+ *                 type: integer
+ *               editors:
+ *                 type: string
+ *                 description: JSON array of editor names
+ *               previewType:
  *                 type: string
  *                 enum: [text, images, pdf]
  *               previewPages:
  *                 type: string
  *                 description: JSON array for text type preview pages
- *               tableOfContentsType:
- *                 type: string
- *                 enum: [text, images, pdf]
- *               tableOfContents:
- *                 type: string
- *                 description: JSON array for text type table of contents
- *               abstractPreviewType:
- *                 type: string
- *                 enum: [text, images, pdf]
- *               abstractPreview:
- *                 type: string
- *                 description: Text or JSON for abstract preview
- *               otherPreviewPagesType:
- *                 type: string
- *                 enum: [text, images, pdf]
- *               otherPreviewPages:
- *                 type: string
- *                 description: JSON for other preview pages
- *               scheduledVisitDate:
- *                 type: string
- *                 format: date
  *               categoryIds:
  *                 type: string
  *                 description: JSON array of category IDs
- *               isPreviewVisible:
+ *               isActive:
  *                 type: boolean
  *               isFeatured:
  *                 type: boolean
- *               isMostPopular:
- *                 type: boolean
- *               isActive:
- *                 type: boolean
- *               coverImage:
+ *               coverPage:
  *                 type: string
  *                 format: binary
- *                 description: Cover image file
+ *                 description: Cover page image file
  *               previewPages:
  *                 type: array
  *                 items:
  *                   type: string
  *                   format: binary
  *                 description: Preview page image files (for images type)
- *               previewPagesPdf:
+ *               previewPdf:
  *                 type: string
  *                 format: binary
- *                 description: Preview pages PDF file (for pdf type)
- *               tableOfContents:
- *                 type: array
- *                 items:
- *                   type: string
- *                   format: binary
- *                 description: Table of contents image files (for images type)
- *               tableOfContentsPdf:
- *                 type: string
- *                 format: binary
- *                 description: Table of contents PDF file (for pdf type)
- *               abstractPreview:
- *                 type: array
- *                 items:
- *                   type: string
- *                   format: binary
- *                 description: Abstract preview image files (for images type)
- *               abstractPreviewPdf:
- *                 type: string
- *                 format: binary
- *                 description: Abstract preview PDF file (for pdf type)
- *               otherPreviewPages:
- *                 type: array
- *                 items:
- *                   type: string
- *                   format: binary
- *                 description: Other preview page image files (for images type)
- *               otherPreviewPagesPdf:
- *                 type: string
- *                 format: binary
- *                 description: Other preview pages PDF file (for pdf type)
+ *                 description: Preview PDF file (for pdf type)
  *     responses:
  *       200:
  *         description: Book updated successfully
  *       404:
  *         description: Book not found
  *   delete:
- *     summary: Delete library book (Admin)
- *     tags: [Library - Admin]
+ *     summary: Delete bookstore book (Admin)
+ *     tags: [Bookstore - Admin]
  *     security:
  *       - bearerAuth: []
  *     parameters:

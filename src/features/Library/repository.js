@@ -112,6 +112,19 @@ async function getFeaturedBooks() {
   });
 }
 
+async function getMostPopularBooks() {
+  return await Book.findAll({
+    where: { isActive: true, isMostPopular: true },
+    include: [
+      {
+        model: Category,
+        through: { attributes: [] },
+      },
+    ],
+    limit: 10,
+  });
+}
+
 // ==================
 // Book Categories
 // ==================
@@ -228,6 +241,7 @@ module.exports = {
   updateBook,
   deleteBook,
   getFeaturedBooks,
+  getMostPopularBooks,
   assignCategoriesToBook,
   getBooksByCategory,
   createReadingVisit,

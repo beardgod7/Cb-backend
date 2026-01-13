@@ -58,14 +58,55 @@ const Book = sequelize.define(
       type: DataTypes.STRING(1000),
       allowNull: true,
     },
+    // Preview pages can be array of objects {page_title, text}, array of images, or PDF
     previewPages: {
-      type: DataTypes.ARRAY(DataTypes.STRING(1000)),
-      defaultValue: [],
+      type: DataTypes.JSONB,
       allowNull: true,
+      comment: "Can store array of {page_title, text} objects, array of image URLs, or PDF URL",
     },
+    previewPagesType: {
+      type: DataTypes.ENUM("text", "images", "pdf"),
+      defaultValue: "text",
+      allowNull: false,
+    },
+    // Table of contents can be array, array of images, or PDF
     tableOfContents: {
-      type: DataTypes.TEXT,
+      type: DataTypes.JSONB,
       allowNull: true,
+      comment: "Can store array of content items, array of image URLs, or PDF URL",
+    },
+    tableOfContentsType: {
+      type: DataTypes.ENUM("text", "images", "pdf"),
+      defaultValue: "text",
+      allowNull: false,
+    },
+    // Abstract preview can be string, array of images, or PDF
+    abstractPreview: {
+      type: DataTypes.JSONB,
+      allowNull: true,
+      comment: "Can store string text, array of image URLs, or PDF URL",
+    },
+    abstractPreviewType: {
+      type: DataTypes.ENUM("text", "images", "pdf"),
+      defaultValue: "text",
+      allowNull: false,
+    },
+    // Other preview pages
+    otherPreviewPages: {
+      type: DataTypes.JSONB,
+      allowNull: true,
+      comment: "Additional preview content in various formats",
+    },
+    otherPreviewPagesType: {
+      type: DataTypes.ENUM("text", "images", "pdf"),
+      defaultValue: "text",
+      allowNull: false,
+    },
+    // Scheduled date to visit library
+    scheduledVisitDate: {
+      type: DataTypes.DATEONLY,
+      allowNull: true,
+      comment: "Scheduled date for library visit",
     },
     isPreviewVisible: {
       type: DataTypes.BOOLEAN,
@@ -73,6 +114,11 @@ const Book = sequelize.define(
       allowNull: false,
     },
     isFeatured: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+      allowNull: false,
+    },
+    isMostPopular: {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
       allowNull: false,

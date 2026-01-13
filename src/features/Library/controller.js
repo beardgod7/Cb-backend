@@ -97,7 +97,6 @@ async function createBook(req, res, next) {
   try {
     const userId = req.userId;
     let coverImageUrl = null;
-    const previewPageUrls = [];
     const folderName = "Library/Books";
 
     // Upload cover image
@@ -109,23 +108,50 @@ async function createBook(req, res, next) {
       );
     }
 
-    // Upload preview pages
-    if (req.files && req.files.previewPages) {
-      const files = req.files.previewPages.slice(0, 20); // Max 20 preview pages
-      for (const file of files) {
-        const url = await uploadToCloudinary(
-          file.buffer,
-          `${folderName}/Previews`,
-          `preview-${userId}-${file.originalname}`
+    // Helper function to process different content types
+    const processContentField = async (fieldName, contentType, textData) => {
+      if (contentType === "images" && req.files && req.files[fieldName]) {
+        const imageUrls = [];
+        const files = req.files[fieldName].slice(0, 20);
+        for (const file of files) {
+          const url = await uploadToCloudinary(
+            file.buffer,
+            `${folderName}/${fieldName}`,
+            `${fieldName}-${userId}-${file.originalname}`
+          );
+          imageUrls.push(url);
+        }
+        return imageUrls;
+      } else if (contentType === "pdf" && req.files && req.files[`${fieldName}Pdf`] && req.files[`${fieldName}Pdf`][0]) {
+        const pdfUrl = await uploadToCloudinary(
+          req.files[`${fieldName}Pdf`][0].buffer,
+          `${folderName}/${fieldName}`,
+          `${fieldName}-${userId}-${req.files[`${fieldName}Pdf`][0].originalname}`
         );
-        previewPageUrls.push(url);
+        return pdfUrl;
+      } else if (contentType === "text" && textData) {
+        try {
+          return typeof textData === "string" ? JSON.parse(textData) : textData;
+        } catch (error) {
+          return textData;
+        }
       }
-    }
+      return null;
+    };
+
+    // Process all content fields
+    const previewPages = await processContentField("previewPages", req.body.previewPagesType, req.body.previewPages);
+    const tableOfContents = await processContentField("tableOfContents", req.body.tableOfContentsType, req.body.tableOfContents);
+    const abstractPreview = await processContentField("abstractPreview", req.body.abstractPreviewType, req.body.abstractPreview);
+    const otherPreviewPages = await processContentField("otherPreviewPages", req.body.otherPreviewPagesType, req.body.otherPreviewPages);
 
     const bookData = {
       ...req.body,
       coverImage: coverImageUrl,
-      previewPages: previewPageUrls,
+      previewPages,
+      tableOfContents,
+      abstractPreview,
+      otherPreviewPages,
       createdBy: userId,
     };
 
@@ -160,7 +186,6 @@ async function updateBook(req, res, next) {
     const { id } = req.params;
     const userId = req.userId;
     let coverImageUrl = null;
-    const previewPageUrls = [];
     const folderName = "Library/Books";
 
     // Upload new cover image if provided
@@ -172,23 +197,54 @@ async function updateBook(req, res, next) {
       );
     }
 
-    // Upload new preview pages if provided
-    if (req.files && req.files.previewPages) {
-      const files = req.files.previewPages.slice(0, 20);
-      for (const file of files) {
-        const url = await uploadToCloudinary(
-          file.buffer,
-          `${folderName}/Previews`,
-          `preview-${userId}-${file.originalname}`
+    // Helper function to process different content types
+    const processContentField = async (fieldName, contentType, textData) => {
+      if (contentType === "images" && req.files && req.files[fieldName]) {
+        const imageUrls = [];
+        const files = req.files[fieldName].slice(0, 20);
+        for (const file of files) {
+          const url = await uploadToCloudinary(
+            file.buffer,
+            `${folderName}/${fieldName}`,
+            `${fieldName}-${userId}-${file.originalname}`
+          );
+          imageUrls.push(url);
+        }
+        return imageUrls;
+      } else if (contentType === "pdf" && req.files && req.files[`${fieldName}Pdf`] && req.files[`${fieldName}Pdf`][0]) {
+        const pdfUrl = await uploadToCloudinary(
+          req.files[`${fieldName}Pdf`][0].buffer,
+          `${folderName}/${fieldName}`,
+          `${fieldName}-${userId}-${req.files[`${fieldName}Pdf`][0].originalname}`
         );
-        previewPageUrls.push(url);
+        return pdfUrl;
+      } else if (contentType === "text" && textData) {
+        try {
+          return typeof textData === "string" ? JSON.parse(textData) : textData;
+        } catch (error) {
+          return textData;
+        }
       }
-    }
+      return undefined;
+    };
+
+    // Process all content fields
+    const previewPages = req.body.previewPagesType ? 
+      await processContentField("previewPages", req.body.previewPagesType, req.body.previewPages) : undefined;
+    const tableOfContents = req.body.tableOfContentsType ? 
+      await processContentField("tableOfContents", req.body.tableOfContentsType, req.body.tableOfContents) : undefined;
+    const abstractPreview = req.body.abstractPreviewType ? 
+      await processContentField("abstractPreview", req.body.abstractPreviewType, req.body.abstractPreview) : undefined;
+    const otherPreviewPages = req.body.otherPreviewPagesType ? 
+      await processContentField("otherPreviewPages", req.body.otherPreviewPagesType, req.body.otherPreviewPages) : undefined;
 
     const updateData = {
       ...req.body,
       coverImage: coverImageUrl || undefined,
-      previewPages: previewPageUrls.length > 0 ? previewPageUrls : undefined,
+      previewPages: previewPages !== undefined ? previewPages : undefined,
+      tableOfContents: tableOfContents !== undefined ? tableOfContents : undefined,
+      abstractPreview: abstractPreview !== undefined ? abstractPreview : undefined,
+      otherPreviewPages: otherPreviewPages !== undefined ? otherPreviewPages : undefined,
     };
 
     // Parse categoryIds if it's a string
@@ -276,6 +332,19 @@ async function getFeaturedBooks(req, res, next) {
 
     res.status(200).json({
       message: "Featured books retrieved successfully",
+      data: books,
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function getMostPopularBooks(req, res, next) {
+  try {
+    const books = await repository.getMostPopularBooks();
+
+    res.status(200).json({
+      message: "Most popular books retrieved successfully",
       data: books,
     });
   } catch (err) {
@@ -443,6 +512,7 @@ module.exports = {
   getAllBooks,
   getBookById,
   getFeaturedBooks,
+  getMostPopularBooks,
   getBooksByCategory,
   bookReadingVisit,
   getAllReadingVisits,

@@ -12,16 +12,38 @@ const updateCategorySchema = Joi.object({
   isActive: Joi.boolean().optional(),
 });
 
+const previewContentSchema = Joi.alternatives().try(
+  // Array of text objects
+  Joi.array().items(
+    Joi.object({
+      page_title: Joi.string().required(),
+      text: Joi.string().required(),
+    })
+  ),
+  // Array of image URLs
+  Joi.array().items(Joi.string().uri()),
+  // Single PDF URL or text content
+  Joi.string()
+);
+
 const bookSchema = Joi.object({
   title: Joi.string().required(),
   author: Joi.string().required(),
   yearOfPublication: Joi.number().integer().min(1000).max(9999).optional(),
   description: Joi.string().optional(),
   coverImage: Joi.string().optional(),
-  previewPages: Joi.array().items(Joi.string()).optional(),
-  tableOfContents: Joi.string().optional(),
+  previewPages: previewContentSchema.optional(),
+  previewPagesType: Joi.string().valid("text", "images", "pdf").optional(),
+  tableOfContents: previewContentSchema.optional(),
+  tableOfContentsType: Joi.string().valid("text", "images", "pdf").optional(),
+  abstractPreview: previewContentSchema.optional(),
+  abstractPreviewType: Joi.string().valid("text", "images", "pdf").optional(),
+  otherPreviewPages: previewContentSchema.optional(),
+  otherPreviewPagesType: Joi.string().valid("text", "images", "pdf").optional(),
+  scheduledVisitDate: Joi.date().optional(),
   isPreviewVisible: Joi.boolean().optional(),
   isFeatured: Joi.boolean().optional(),
+  isMostPopular: Joi.boolean().optional(),
   isActive: Joi.boolean().optional(),
   createdBy: Joi.string().uuid().optional(),
   categoryIds: Joi.array().items(Joi.string().uuid()).optional(),
@@ -33,10 +55,18 @@ const updateBookSchema = Joi.object({
   yearOfPublication: Joi.number().integer().min(1000).max(9999).optional(),
   description: Joi.string().optional(),
   coverImage: Joi.string().optional(),
-  previewPages: Joi.array().items(Joi.string()).optional(),
-  tableOfContents: Joi.string().optional(),
+  previewPages: previewContentSchema.optional(),
+  previewPagesType: Joi.string().valid("text", "images", "pdf").optional(),
+  tableOfContents: previewContentSchema.optional(),
+  tableOfContentsType: Joi.string().valid("text", "images", "pdf").optional(),
+  abstractPreview: previewContentSchema.optional(),
+  abstractPreviewType: Joi.string().valid("text", "images", "pdf").optional(),
+  otherPreviewPages: previewContentSchema.optional(),
+  otherPreviewPagesType: Joi.string().valid("text", "images", "pdf").optional(),
+  scheduledVisitDate: Joi.date().optional(),
   isPreviewVisible: Joi.boolean().optional(),
   isFeatured: Joi.boolean().optional(),
+  isMostPopular: Joi.boolean().optional(),
   isActive: Joi.boolean().optional(),
   categoryIds: Joi.array().items(Joi.string().uuid()).optional(),
 });
