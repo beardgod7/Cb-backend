@@ -59,11 +59,15 @@ const fileFilter = (req, file, cb) => {
     "audio/x-midi", // .mid, .midi (alternative)
   ];
   
+  console.log(`File upload attempt: ${file.originalname}, MIME type: ${file.mimetype}`);
+  
   if (allowedTypes.includes(file.mimetype)) {
+    console.log(`File accepted: ${file.originalname}`);
     cb(null, true);
   } else {
+    console.log(`File rejected: ${file.originalname}, MIME type: ${file.mimetype}`);
     cb(
-      new Error(`Unsupported file type: ${file.mimetype}. Allowed types: images, PDFs, audio, and video files.`)
+      new Error(`Unsupported file type: ${file.mimetype}. File: ${file.originalname}. Allowed types: images, PDFs, audio, and video files.`)
     );
   }
 };

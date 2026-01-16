@@ -6,15 +6,19 @@ const cloudinary = require("../../config/cloudinary");
  * @param {Buffer} buffer - File buffer to upload.
  * @param {string} folder - Cloudinary folder to store the file.
  * @param {string} filename - Public ID for the uploaded file.
+ * @param {object} options - Additional Cloudinary options.
  * @returns {Promise<string>} - Secure URL of the uploaded file.
  */
-async function uploadToCloudinary(buffer, folder, filename) {
+async function uploadToCloudinary(buffer, folder, filename, options = {}) {
   return new Promise((resolve, reject) => {
+    const uploadOptions = {
+      folder,
+      public_id: filename,
+      ...options,
+    };
+    
     const stream = cloudinary.uploader.upload_stream(
-      {
-        folder,
-        public_id: filename,
-      },
+      uploadOptions,
       (error, result) => {
         if (error) return reject(error);
         resolve(result.secure_url);

@@ -27,23 +27,39 @@ async function createArtifact(req, res, next) {
     if (req.files && req.files.images) {
       const files = req.files.images.slice(0, 10); // Max 10 images
       for (const file of files) {
-        const url = await uploadToCloudinary(
-          file.buffer,
-          folderName,
-          `${req.body.identificationNumber}-${file.originalname}`
-        );
-        imageUrls.push(url);
+        try {
+          const url = await uploadToCloudinary(
+            file.buffer,
+            folderName,
+            `${req.body.identificationNumber}-${file.originalname}`
+          );
+          imageUrls.push(url);
+        } catch (error) {
+          console.error("Error uploading image:", error);
+          return res.status(400).json({ 
+            message: `Failed to upload image: ${file.originalname}`, 
+            error: error.message 
+          });
+        }
       }
     }
 
     // Upload audio narration
     if (req.files && req.files.audioNarration && req.files.audioNarration[0]) {
-      audioUrl = await uploadToCloudinary(
-        req.files.audioNarration[0].buffer,
-        `${folderName}/Audio`,
-        `audio-${req.body.identificationNumber}`,
-        { resource_type: "video" } // Cloudinary uses 'video' for audio files
-      );
+      try {
+        audioUrl = await uploadToCloudinary(
+          req.files.audioNarration[0].buffer,
+          `${folderName}/Audio`,
+          `audio-${req.body.identificationNumber}`,
+          { resource_type: "video" } // Cloudinary uses 'video' for audio files
+        );
+      } catch (error) {
+        console.error("Error uploading audio:", error);
+        return res.status(400).json({ 
+          message: "Failed to upload audio file", 
+          error: error.message 
+        });
+      }
     }
 
     const artifactData = {
@@ -82,23 +98,39 @@ async function updateArtifact(req, res, next) {
     if (req.files && req.files.images) {
       const files = req.files.images.slice(0, 10);
       for (const file of files) {
-        const url = await uploadToCloudinary(
-          file.buffer,
-          folderName,
-          `${req.body.identificationNumber || id}-${file.originalname}`
-        );
-        imageUrls.push(url);
+        try {
+          const url = await uploadToCloudinary(
+            file.buffer,
+            folderName,
+            `${req.body.identificationNumber || id}-${file.originalname}`
+          );
+          imageUrls.push(url);
+        } catch (error) {
+          console.error("Error uploading image:", error);
+          return res.status(400).json({ 
+            message: `Failed to upload image: ${file.originalname}`, 
+            error: error.message 
+          });
+        }
       }
     }
 
     // Upload new audio if provided
     if (req.files && req.files.audioNarration && req.files.audioNarration[0]) {
-      audioUrl = await uploadToCloudinary(
-        req.files.audioNarration[0].buffer,
-        `${folderName}/Audio`,
-        `audio-${req.body.identificationNumber || id}`,
-        { resource_type: "video" }
-      );
+      try {
+        audioUrl = await uploadToCloudinary(
+          req.files.audioNarration[0].buffer,
+          `${folderName}/Audio`,
+          `audio-${req.body.identificationNumber || id}`,
+          { resource_type: "video" }
+        );
+      } catch (error) {
+        console.error("Error uploading audio:", error);
+        return res.status(400).json({ 
+          message: "Failed to upload audio file", 
+          error: error.message 
+        });
+      }
     }
 
     const updateData = {

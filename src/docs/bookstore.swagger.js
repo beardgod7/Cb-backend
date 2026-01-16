@@ -429,7 +429,7 @@
  *                 description: JSON array of editor names
  *               previewType:
  *                 type: string
- *                 enum: [text, images, pdf, video, audio]
+ *                 enum: [text, images, pdf]
  *               previewPagesText:
  *                 type: string
  *                 description: JSON array for text type preview pages
@@ -516,7 +516,7 @@
  *                 description: JSON array of editor names
  *               previewType:
  *                 type: string
- *                 enum: [text, images, pdf, video, audio]
+ *                 enum: [text, images, pdf]
  *               previewPagesText:
  *                 type: string
  *                 description: JSON array for text type preview pages
