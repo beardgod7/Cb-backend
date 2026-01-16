@@ -65,7 +65,7 @@ const BookstoreBook = sequelize.define(
       comment: "Can store array of {page_title, text} objects, array of image URLs, or PDF URL",
     },
     previewType: {
-      type: DataTypes.ENUM("text", "images", "pdf"),
+      type: DataTypes.ENUM("text", "images", "pdf", "video", "audio"),
       defaultValue: "text",
       allowNull: false,
     },

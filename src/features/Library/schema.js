@@ -20,9 +20,9 @@ const previewContentSchema = Joi.alternatives().try(
       text: Joi.string().required(),
     })
   ),
-  // Array of image URLs
+  // Array of image/video/audio URLs
   Joi.array().items(Joi.string().uri()),
-  // Single PDF URL or text content
+  // Single PDF/video/audio URL or text content
   Joi.string()
 );
 
@@ -33,13 +33,13 @@ const bookSchema = Joi.object({
   description: Joi.string().optional(),
   coverImage: Joi.string().optional(),
   previewPages: previewContentSchema.optional(),
-  previewPagesType: Joi.string().valid("text", "images", "pdf").optional(),
+  previewPagesType: Joi.string().valid("text", "images", "pdf", "video", "audio").optional(),
   tableOfContents: previewContentSchema.optional(),
-  tableOfContentsType: Joi.string().valid("text", "images", "pdf").optional(),
+  tableOfContentsType: Joi.string().valid("text", "images", "pdf", "video", "audio").optional(),
   abstractPreview: previewContentSchema.optional(),
-  abstractPreviewType: Joi.string().valid("text", "images", "pdf").optional(),
+  abstractPreviewType: Joi.string().valid("text", "images", "pdf", "video", "audio").optional(),
   otherPreviewPages: previewContentSchema.optional(),
-  otherPreviewPagesType: Joi.string().valid("text", "images", "pdf").optional(),
+  otherPreviewPagesType: Joi.string().valid("text", "images", "pdf", "video", "audio").optional(),
   scheduledVisitDate: Joi.date().optional(),
   isPreviewVisible: Joi.boolean().optional(),
   isFeatured: Joi.boolean().optional(),
@@ -56,13 +56,13 @@ const updateBookSchema = Joi.object({
   description: Joi.string().optional(),
   coverImage: Joi.string().optional(),
   previewPages: previewContentSchema.optional(),
-  previewPagesType: Joi.string().valid("text", "images", "pdf").optional(),
+  previewPagesType: Joi.string().valid("text", "images", "pdf", "video", "audio").optional(),
   tableOfContents: previewContentSchema.optional(),
-  tableOfContentsType: Joi.string().valid("text", "images", "pdf").optional(),
+  tableOfContentsType: Joi.string().valid("text", "images", "pdf", "video", "audio").optional(),
   abstractPreview: previewContentSchema.optional(),
-  abstractPreviewType: Joi.string().valid("text", "images", "pdf").optional(),
+  abstractPreviewType: Joi.string().valid("text", "images", "pdf", "video", "audio").optional(),
   otherPreviewPages: previewContentSchema.optional(),
-  otherPreviewPagesType: Joi.string().valid("text", "images", "pdf").optional(),
+  otherPreviewPagesType: Joi.string().valid("text", "images", "pdf", "video", "audio").optional(),
   scheduledVisitDate: Joi.date().optional(),
   isPreviewVisible: Joi.boolean().optional(),
   isFeatured: Joi.boolean().optional(),

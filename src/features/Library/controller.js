@@ -122,13 +122,13 @@ async function createBook(req, res, next) {
           imageUrls.push(url);
         }
         return imageUrls;
-      } else if (contentType === "pdf" && req.files && req.files[`${fieldName}Pdf`] && req.files[`${fieldName}Pdf`][0]) {
-        const pdfUrl = await uploadToCloudinary(
+      } else if ((contentType === "pdf" || contentType === "video" || contentType === "audio") && req.files && req.files[`${fieldName}Pdf`] && req.files[`${fieldName}Pdf`][0]) {
+        const fileUrl = await uploadToCloudinary(
           req.files[`${fieldName}Pdf`][0].buffer,
           `${folderName}/${fieldName}`,
           `${fieldName}-${userId}-${req.files[`${fieldName}Pdf`][0].originalname}`
         );
-        return pdfUrl;
+        return fileUrl;
       } else if (contentType === "text" && textData) {
         try {
           return typeof textData === "string" ? JSON.parse(textData) : textData;
@@ -211,13 +211,13 @@ async function updateBook(req, res, next) {
           imageUrls.push(url);
         }
         return imageUrls;
-      } else if (contentType === "pdf" && req.files && req.files[`${fieldName}Pdf`] && req.files[`${fieldName}Pdf`][0]) {
-        const pdfUrl = await uploadToCloudinary(
+      } else if ((contentType === "pdf" || contentType === "video" || contentType === "audio") && req.files && req.files[`${fieldName}Pdf`] && req.files[`${fieldName}Pdf`][0]) {
+        const fileUrl = await uploadToCloudinary(
           req.files[`${fieldName}Pdf`][0].buffer,
           `${folderName}/${fieldName}`,
           `${fieldName}-${userId}-${req.files[`${fieldName}Pdf`][0].originalname}`
         );
-        return pdfUrl;
+        return fileUrl;
       } else if (contentType === "text" && textData) {
         try {
           return typeof textData === "string" ? JSON.parse(textData) : textData;

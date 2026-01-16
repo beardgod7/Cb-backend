@@ -20,9 +20,9 @@ const previewPagesSchema = Joi.alternatives().try(
       text: Joi.string().required(),
     })
   ),
-  // Array of image URLs
+  // Array of image/video/audio URLs
   Joi.array().items(Joi.string().uri()),
-  // Single PDF URL
+  // Single PDF/video/audio URL
   Joi.string().uri()
 );
 
@@ -37,7 +37,7 @@ const bookstoreBookSchema = Joi.object({
   numberOfParts: Joi.number().integer().min(0).optional(),
   editors: Joi.array().items(Joi.string().trim()).optional(),
   previewPages: previewPagesSchema.optional(),
-  previewType: Joi.string().valid("text", "images", "pdf").optional(),
+  previewType: Joi.string().valid("text", "images", "pdf", "video", "audio").optional(),
   coverPage: Joi.string().uri().optional(),
   isActive: Joi.boolean().optional(),
   isFeatured: Joi.boolean().optional(),
@@ -55,7 +55,7 @@ const updateBookstoreBookSchema = Joi.object({
   numberOfParts: Joi.number().integer().min(0).optional(),
   editors: Joi.array().items(Joi.string().trim()).optional(),
   previewPages: previewPagesSchema.optional(),
-  previewType: Joi.string().valid("text", "images", "pdf").optional(),
+  previewType: Joi.string().valid("text", "images", "pdf", "video", "audio").optional(),
   coverPage: Joi.string().uri().optional(),
   isActive: Joi.boolean().optional(),
   isFeatured: Joi.boolean().optional(),

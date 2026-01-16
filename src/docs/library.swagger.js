@@ -74,7 +74,7 @@
  *           description: Preview pages (text objects, image URLs, or PDF URL)
  *         previewPagesType:
  *           type: string
- *           enum: [text, images, pdf]
+ *           enum: [text, images, pdf, video, audio]
  *           description: Type of preview pages
  *         tableOfContentsContent:
  *           oneOf:
@@ -90,7 +90,7 @@
  *           description: Table of contents (text array, image URLs, or PDF URL)
  *         tableOfContentsType:
  *           type: string
- *           enum: [text, images, pdf]
+ *           enum: [text, images, pdf, video, audio]
  *           description: Type of table of contents
  *         abstractPreviewContent:
  *           oneOf:
@@ -104,7 +104,7 @@
  *           description: Abstract preview (text, image URLs, or PDF URL)
  *         abstractPreviewType:
  *           type: string
- *           enum: [text, images, pdf]
+ *           enum: [text, images, pdf, video, audio]
  *           description: Type of abstract preview
  *         otherPreviewContent:
  *           oneOf:
@@ -120,7 +120,7 @@
  *           description: Other preview pages content
  *         otherPreviewPagesType:
  *           type: string
- *           enum: [text, images, pdf]
+ *           enum: [text, images, pdf, video, audio]
  *           description: Type of other preview pages
  *         scheduledVisitDate:
  *           type: string
@@ -469,25 +469,25 @@
  *                 type: string
  *               previewPagesType:
  *                 type: string
- *                 enum: [text, images, pdf]
+ *                 enum: [text, images, pdf, video, audio]
  *               previewPagesText:
  *                 type: string
  *                 description: JSON array for text type preview pages
  *               tableOfContentsType:
  *                 type: string
- *                 enum: [text, images, pdf]
+ *                 enum: [text, images, pdf, video, audio]
  *               tableOfContentsText:
  *                 type: string
  *                 description: JSON array for text type table of contents
  *               abstractPreviewType:
  *                 type: string
- *                 enum: [text, images, pdf]
+ *                 enum: [text, images, pdf, video, audio]
  *               abstractPreviewText:
  *                 type: string
  *                 description: Text or JSON for abstract preview
  *               otherPreviewPagesType:
  *                 type: string
- *                 enum: [text, images, pdf]
+ *                 enum: [text, images, pdf, video, audio]
  *               otherPreviewPagesText:
  *                 type: string
  *                 description: JSON for other preview pages
@@ -601,25 +601,25 @@
  *                 type: string
  *               previewPagesType:
  *                 type: string
- *                 enum: [text, images, pdf]
+ *                 enum: [text, images, pdf, video, audio]
  *               previewPagesText:
  *                 type: string
  *                 description: JSON array for text type preview pages
  *               tableOfContentsType:
  *                 type: string
- *                 enum: [text, images, pdf]
+ *                 enum: [text, images, pdf, video, audio]
  *               tableOfContentsText:
  *                 type: string
  *                 description: JSON array for text type table of contents
  *               abstractPreviewType:
  *                 type: string
- *                 enum: [text, images, pdf]
+ *                 enum: [text, images, pdf, video, audio]
  *               abstractPreviewText:
  *                 type: string
  *                 description: Text or JSON for abstract preview
  *               otherPreviewPagesType:
  *                 type: string
- *                 enum: [text, images, pdf]
+ *                 enum: [text, images, pdf, video, audio]
  *               otherPreviewPagesText:
  *                 type: string
  *                 description: JSON for other preview pages

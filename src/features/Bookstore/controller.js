@@ -123,14 +123,14 @@ async function createBook(req, res, next) {
         previewImageUrls.push(url);
       }
       previewPagesData = previewImageUrls;
-    } else if (previewType === "pdf" && req.files && req.files.previewPdf && req.files.previewPdf[0]) {
-      // Upload preview PDF
-      const pdfUrl = await uploadToCloudinary(
+    } else if ((previewType === "pdf" || previewType === "video" || previewType === "audio") && req.files && req.files.previewPdf && req.files.previewPdf[0]) {
+      // Upload preview PDF/Video/Audio
+      const fileUrl = await uploadToCloudinary(
         req.files.previewPdf[0].buffer,
         `${folderName}/Previews`,
         `preview-${userId}-${req.files.previewPdf[0].originalname}`
       );
-      previewPagesData = pdfUrl;
+      previewPagesData = fileUrl;
     } else if (previewType === "text" && req.body.previewPages) {
       // Parse text preview pages
       try {
@@ -216,13 +216,13 @@ async function updateBook(req, res, next) {
         previewImageUrls.push(url);
       }
       previewPagesData = previewImageUrls;
-    } else if (previewType === "pdf" && req.files && req.files.previewPdf && req.files.previewPdf[0]) {
-      const pdfUrl = await uploadToCloudinary(
+    } else if ((previewType === "pdf" || previewType === "video" || previewType === "audio") && req.files && req.files.previewPdf && req.files.previewPdf[0]) {
+      const fileUrl = await uploadToCloudinary(
         req.files.previewPdf[0].buffer,
         `${folderName}/Previews`,
         `preview-${userId}-${req.files.previewPdf[0].originalname}`
       );
-      previewPagesData = pdfUrl;
+      previewPagesData = fileUrl;
     } else if (previewType === "text" && req.body.previewPages) {
       try {
         previewPagesData = JSON.parse(req.body.previewPages);
