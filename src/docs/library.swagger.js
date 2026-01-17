@@ -74,7 +74,7 @@
  *           description: Preview pages (text objects, image URLs, or PDF URL)
  *         previewPagesType:
  *           type: string
- *           enum: [text, images, pdf, video, audio]
+ *           enum: [text, images, pdf]
  *           description: Type of preview pages
  *         tableOfContentsContent:
  *           oneOf:
@@ -90,7 +90,7 @@
  *           description: Table of contents (text array, image URLs, or PDF URL)
  *         tableOfContentsType:
  *           type: string
- *           enum: [text, images, pdf, video, audio]
+ *           enum: [text, images, pdf]
  *           description: Type of table of contents
  *         abstractPreviewContent:
  *           oneOf:
@@ -104,7 +104,7 @@
  *           description: Abstract preview (text, image URLs, or PDF URL)
  *         abstractPreviewType:
  *           type: string
- *           enum: [text, images, pdf, video, audio]
+ *           enum: [text, images, pdf]
  *           description: Type of abstract preview
  *         otherPreviewContent:
  *           oneOf:
@@ -120,7 +120,7 @@
  *           description: Other preview pages content
  *         otherPreviewPagesType:
  *           type: string
- *           enum: [text, images, pdf, video, audio]
+ *           enum: [text, images, pdf]
  *           description: Type of other preview pages
  *         scheduledVisitDate:
  *           type: string
@@ -469,25 +469,25 @@
  *                 type: string
  *               previewPagesType:
  *                 type: string
- *                 enum: [text, images, pdf, video, audio]
+ *                 enum: [text, images, pdf]
  *               previewPagesText:
  *                 type: string
  *                 description: JSON array for text type preview pages
  *               tableOfContentsType:
  *                 type: string
- *                 enum: [text, images, pdf, video, audio]
+ *                 enum: [text, images, pdf]
  *               tableOfContentsText:
  *                 type: string
  *                 description: JSON array for text type table of contents
  *               abstractPreviewType:
  *                 type: string
- *                 enum: [text, images, pdf, video, audio]
+ *                 enum: [text, images, pdf]
  *               abstractPreviewText:
  *                 type: string
  *                 description: Text or JSON for abstract preview
  *               otherPreviewPagesType:
  *                 type: string
- *                 enum: [text, images, pdf, video, audio]
+ *                 enum: [text, images, pdf]
  *               otherPreviewPagesText:
  *                 type: string
  *                 description: JSON for other preview pages
@@ -519,14 +519,6 @@
  *                 type: string
  *                 format: binary
  *                 description: Preview pages PDF file (for pdf type)
- *               previewPagesVideo:
- *                 type: string
- *                 format: binary
- *                 description: Preview pages video file (for video type)
- *               previewPagesAudio:
- *                 type: string
- *                 format: binary
- *                 description: Preview pages audio file (for audio type)
  *               tableOfContentsImages:
  *                 type: array
  *                 items:
@@ -537,14 +529,6 @@
  *                 type: string
  *                 format: binary
  *                 description: Table of contents PDF file (for pdf type)
- *               tableOfContentsVideo:
- *                 type: string
- *                 format: binary
- *                 description: Table of contents video file (for video type)
- *               tableOfContentsAudio:
- *                 type: string
- *                 format: binary
- *                 description: Table of contents audio file (for audio type)
  *               abstractPreviewImages:
  *                 type: array
  *                 items:
@@ -555,14 +539,6 @@
  *                 type: string
  *                 format: binary
  *                 description: Abstract preview PDF file (for pdf type)
- *               abstractPreviewVideo:
- *                 type: string
- *                 format: binary
- *                 description: Abstract preview video file (for video type)
- *               abstractPreviewAudio:
- *                 type: string
- *                 format: binary
- *                 description: Abstract preview audio file (for audio type)
  *               otherPreviewPagesImages:
  *                 type: array
  *                 items:
@@ -573,14 +549,6 @@
  *                 type: string
  *                 format: binary
  *                 description: Other preview pages PDF file (for pdf type)
- *               otherPreviewPagesVideo:
- *                 type: string
- *                 format: binary
- *                 description: Other preview pages video file (for video type)
- *               otherPreviewPagesAudio:
- *                 type: string
- *                 format: binary
- *                 description: Other preview pages audio file (for audio type)
  *     responses:
  *       201:
  *         description: Book created successfully
@@ -633,25 +601,25 @@
  *                 type: string
  *               previewPagesType:
  *                 type: string
- *                 enum: [text, images, pdf, video, audio]
+ *                 enum: [text, images, pdf]
  *               previewPagesText:
  *                 type: string
  *                 description: JSON array for text type preview pages
  *               tableOfContentsType:
  *                 type: string
- *                 enum: [text, images, pdf, video, audio]
+ *                 enum: [text, images, pdf]
  *               tableOfContentsText:
  *                 type: string
  *                 description: JSON array for text type table of contents
  *               abstractPreviewType:
  *                 type: string
- *                 enum: [text, images, pdf, video, audio]
+ *                 enum: [text, images, pdf]
  *               abstractPreviewText:
  *                 type: string
  *                 description: Text or JSON for abstract preview
  *               otherPreviewPagesType:
  *                 type: string
- *                 enum: [text, images, pdf, video, audio]
+ *                 enum: [text, images, pdf]
  *               otherPreviewPagesText:
  *                 type: string
  *                 description: JSON for other preview pages
@@ -683,14 +651,6 @@
  *                 type: string
  *                 format: binary
  *                 description: Preview pages PDF file (for pdf type)
- *               previewPagesVideo:
- *                 type: string
- *                 format: binary
- *                 description: Preview pages video file (for video type)
- *               previewPagesAudio:
- *                 type: string
- *                 format: binary
- *                 description: Preview pages audio file (for audio type)
  *               tableOfContentsImages:
  *                 type: array
  *                 items:
@@ -701,14 +661,6 @@
  *                 type: string
  *                 format: binary
  *                 description: Table of contents PDF file (for pdf type)
- *               tableOfContentsVideo:
- *                 type: string
- *                 format: binary
- *                 description: Table of contents video file (for video type)
- *               tableOfContentsAudio:
- *                 type: string
- *                 format: binary
- *                 description: Table of contents audio file (for audio type)
  *               abstractPreviewImages:
  *                 type: array
  *                 items:
@@ -719,14 +671,6 @@
  *                 type: string
  *                 format: binary
  *                 description: Abstract preview PDF file (for pdf type)
- *               abstractPreviewVideo:
- *                 type: string
- *                 format: binary
- *                 description: Abstract preview video file (for video type)
- *               abstractPreviewAudio:
- *                 type: string
- *                 format: binary
- *                 description: Abstract preview audio file (for audio type)
  *               otherPreviewPagesImages:
  *                 type: array
  *                 items:
@@ -737,14 +681,6 @@
  *                 type: string
  *                 format: binary
  *                 description: Other preview pages PDF file (for pdf type)
- *               otherPreviewPagesVideo:
- *                 type: string
- *                 format: binary
- *                 description: Other preview pages video file (for video type)
- *               otherPreviewPagesAudio:
- *                 type: string
- *                 format: binary
- *                 description: Other preview pages audio file (for audio type)
  *     responses:
  *       200:
  *         description: Book updated successfully

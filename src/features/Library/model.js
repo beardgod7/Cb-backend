@@ -65,7 +65,7 @@ const Book = sequelize.define(
       comment: "Can store array of {page_title, text} objects, array of image URLs, or PDF URL",
     },
     previewPagesType: {
-      type: DataTypes.ENUM("text", "images", "pdf", "video", "audio"),
+      type: DataTypes.ENUM("text", "images", "pdf"),
       defaultValue: "text",
       allowNull: false,
     },
@@ -76,7 +76,7 @@ const Book = sequelize.define(
       comment: "Can store array of content items, array of image URLs, or PDF URL",
     },
     tableOfContentsType: {
-      type: DataTypes.ENUM("text", "images", "pdf", "video", "audio"),
+      type: DataTypes.ENUM("text", "images", "pdf"),
       defaultValue: "text",
       allowNull: false,
     },
@@ -87,7 +87,7 @@ const Book = sequelize.define(
       comment: "Can store string text, array of image URLs, or PDF URL",
     },
     abstractPreviewType: {
-      type: DataTypes.ENUM("text", "images", "pdf", "video", "audio"),
+      type: DataTypes.ENUM("text", "images", "pdf"),
       defaultValue: "text",
       allowNull: false,
     },
@@ -98,7 +98,7 @@ const Book = sequelize.define(
       comment: "Additional preview content in various formats",
     },
     otherPreviewPagesType: {
-      type: DataTypes.ENUM("text", "images", "pdf", "video", "audio"),
+      type: DataTypes.ENUM("text", "images", "pdf"),
       defaultValue: "text",
       allowNull: false,
     },

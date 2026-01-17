@@ -129,22 +129,6 @@ async function createBook(req, res, next) {
           `${fieldName}-${userId}-${req.files[`${fieldName}Pdf`][0].originalname}`
         );
         return fileUrl;
-      } else if (contentType === "video" && req.files && req.files[`${fieldName}Video`] && req.files[`${fieldName}Video`][0]) {
-        const fileUrl = await uploadToCloudinary(
-          req.files[`${fieldName}Video`][0].buffer,
-          `${folderName}/${fieldName}`,
-          `${fieldName}-${userId}-${req.files[`${fieldName}Video`][0].originalname}`,
-          { resource_type: "video" }
-        );
-        return fileUrl;
-      } else if (contentType === "audio" && req.files && req.files[`${fieldName}Audio`] && req.files[`${fieldName}Audio`][0]) {
-        const fileUrl = await uploadToCloudinary(
-          req.files[`${fieldName}Audio`][0].buffer,
-          `${folderName}/${fieldName}`,
-          `${fieldName}-${userId}-${req.files[`${fieldName}Audio`][0].originalname}`,
-          { resource_type: "video" }
-        );
-        return fileUrl;
       } else if (contentType === "text" && textData) {
         try {
           return typeof textData === "string" ? JSON.parse(textData) : textData;
@@ -232,22 +216,6 @@ async function updateBook(req, res, next) {
           req.files[`${fieldName}Pdf`][0].buffer,
           `${folderName}/${fieldName}`,
           `${fieldName}-${userId}-${req.files[`${fieldName}Pdf`][0].originalname}`
-        );
-        return fileUrl;
-      } else if (contentType === "video" && req.files && req.files[`${fieldName}Video`] && req.files[`${fieldName}Video`][0]) {
-        const fileUrl = await uploadToCloudinary(
-          req.files[`${fieldName}Video`][0].buffer,
-          `${folderName}/${fieldName}`,
-          `${fieldName}-${userId}-${req.files[`${fieldName}Video`][0].originalname}`,
-          { resource_type: "video" }
-        );
-        return fileUrl;
-      } else if (contentType === "audio" && req.files && req.files[`${fieldName}Audio`] && req.files[`${fieldName}Audio`][0]) {
-        const fileUrl = await uploadToCloudinary(
-          req.files[`${fieldName}Audio`][0].buffer,
-          `${folderName}/${fieldName}`,
-          `${fieldName}-${userId}-${req.files[`${fieldName}Audio`][0].originalname}`,
-          { resource_type: "video" }
         );
         return fileUrl;
       } else if (contentType === "text" && textData) {
