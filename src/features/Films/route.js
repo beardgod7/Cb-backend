@@ -41,6 +41,7 @@ router.post(
     { name: "coverImage", maxCount: 1 },
     { name: "thumbnails", maxCount: 10 },
     { name: "previewVideo", maxCount: 1 },
+    { name: "fullVideo", maxCount: 1 },
   ]),
   filmController.createFilm
 );
@@ -51,6 +52,7 @@ router.put(
     { name: "coverImage", maxCount: 1 },
     { name: "thumbnails", maxCount: 10 },
     { name: "previewVideo", maxCount: 1 },
+    { name: "fullVideo", maxCount: 1 },
   ]),
   filmController.updateFilm
 );

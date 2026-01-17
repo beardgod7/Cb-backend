@@ -59,11 +59,23 @@ async function createFilm(req, res, next) {
       );
     }
 
+    // Upload full video
+    let fullVideoUrl = null;
+    if (req.files && req.files.fullVideo && req.files.fullVideo[0]) {
+      fullVideoUrl = await uploadToCloudinary(
+        req.files.fullVideo[0].buffer,
+        `${folderName}/FullVideos`,
+        `full-${userId}-${req.files.fullVideo[0].originalname}`,
+        { resource_type: "video" }
+      );
+    }
+
     const filmData = {
       ...req.body,
       coverImage: coverImageUrl,
       thumbnailGallery: thumbnailUrls,
       previewVideo: previewVideoUrl,
+      fullVideo: fullVideoUrl,
       createdBy: userId,
     };
 
@@ -138,11 +150,23 @@ async function updateFilm(req, res, next) {
       );
     }
 
+    // Upload new full video if provided
+    let fullVideoUrl = null;
+    if (req.files && req.files.fullVideo && req.files.fullVideo[0]) {
+      fullVideoUrl = await uploadToCloudinary(
+        req.files.fullVideo[0].buffer,
+        `${folderName}/FullVideos`,
+        `full-${userId}-${req.files.fullVideo[0].originalname}`,
+        { resource_type: "video" }
+      );
+    }
+
     const updateData = {
       ...req.body,
       coverImage: coverImageUrl || undefined,
       thumbnailGallery: thumbnailUrls.length > 0 ? thumbnailUrls : undefined,
       previewVideo: previewVideoUrl || undefined,
+      fullVideo: fullVideoUrl || undefined,
     };
 
     // Parse tags if it's a string
