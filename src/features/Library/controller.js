@@ -110,9 +110,9 @@ async function createBook(req, res, next) {
 
     // Helper function to process different content types
     const processContentField = async (fieldName, contentType, textData) => {
-      if (contentType === "images" && req.files && req.files[fieldName]) {
+      if (contentType === "images" && req.files && req.files[`${fieldName}Images`]) {
         const imageUrls = [];
-        const files = req.files[fieldName].slice(0, 20);
+        const files = req.files[`${fieldName}Images`].slice(0, 20);
         for (const file of files) {
           const url = await uploadToCloudinary(
             file.buffer,
@@ -122,11 +122,27 @@ async function createBook(req, res, next) {
           imageUrls.push(url);
         }
         return imageUrls;
-      } else if ((contentType === "pdf" || contentType === "video" || contentType === "audio") && req.files && req.files[`${fieldName}Pdf`] && req.files[`${fieldName}Pdf`][0]) {
+      } else if (contentType === "pdf" && req.files && req.files[`${fieldName}Pdf`] && req.files[`${fieldName}Pdf`][0]) {
         const fileUrl = await uploadToCloudinary(
           req.files[`${fieldName}Pdf`][0].buffer,
           `${folderName}/${fieldName}`,
           `${fieldName}-${userId}-${req.files[`${fieldName}Pdf`][0].originalname}`
+        );
+        return fileUrl;
+      } else if (contentType === "video" && req.files && req.files[`${fieldName}Video`] && req.files[`${fieldName}Video`][0]) {
+        const fileUrl = await uploadToCloudinary(
+          req.files[`${fieldName}Video`][0].buffer,
+          `${folderName}/${fieldName}`,
+          `${fieldName}-${userId}-${req.files[`${fieldName}Video`][0].originalname}`,
+          { resource_type: "video" }
+        );
+        return fileUrl;
+      } else if (contentType === "audio" && req.files && req.files[`${fieldName}Audio`] && req.files[`${fieldName}Audio`][0]) {
+        const fileUrl = await uploadToCloudinary(
+          req.files[`${fieldName}Audio`][0].buffer,
+          `${folderName}/${fieldName}`,
+          `${fieldName}-${userId}-${req.files[`${fieldName}Audio`][0].originalname}`,
+          { resource_type: "video" }
         );
         return fileUrl;
       } else if (contentType === "text" && textData) {
@@ -140,10 +156,10 @@ async function createBook(req, res, next) {
     };
 
     // Process all content fields
-    const previewPages = await processContentField("previewPages", req.body.previewPagesType, req.body.previewPages);
-    const tableOfContents = await processContentField("tableOfContents", req.body.tableOfContentsType, req.body.tableOfContents);
-    const abstractPreview = await processContentField("abstractPreview", req.body.abstractPreviewType, req.body.abstractPreview);
-    const otherPreviewPages = await processContentField("otherPreviewPages", req.body.otherPreviewPagesType, req.body.otherPreviewPages);
+    const previewPages = await processContentField("previewPages", req.body.previewPagesType, req.body.previewPagesText);
+    const tableOfContents = await processContentField("tableOfContents", req.body.tableOfContentsType, req.body.tableOfContentsText);
+    const abstractPreview = await processContentField("abstractPreview", req.body.abstractPreviewType, req.body.abstractPreviewText);
+    const otherPreviewPages = await processContentField("otherPreviewPages", req.body.otherPreviewPagesType, req.body.otherPreviewPagesText);
 
     const bookData = {
       ...req.body,
@@ -199,9 +215,9 @@ async function updateBook(req, res, next) {
 
     // Helper function to process different content types
     const processContentField = async (fieldName, contentType, textData) => {
-      if (contentType === "images" && req.files && req.files[fieldName]) {
+      if (contentType === "images" && req.files && req.files[`${fieldName}Images`]) {
         const imageUrls = [];
-        const files = req.files[fieldName].slice(0, 20);
+        const files = req.files[`${fieldName}Images`].slice(0, 20);
         for (const file of files) {
           const url = await uploadToCloudinary(
             file.buffer,
@@ -211,11 +227,27 @@ async function updateBook(req, res, next) {
           imageUrls.push(url);
         }
         return imageUrls;
-      } else if ((contentType === "pdf" || contentType === "video" || contentType === "audio") && req.files && req.files[`${fieldName}Pdf`] && req.files[`${fieldName}Pdf`][0]) {
+      } else if (contentType === "pdf" && req.files && req.files[`${fieldName}Pdf`] && req.files[`${fieldName}Pdf`][0]) {
         const fileUrl = await uploadToCloudinary(
           req.files[`${fieldName}Pdf`][0].buffer,
           `${folderName}/${fieldName}`,
           `${fieldName}-${userId}-${req.files[`${fieldName}Pdf`][0].originalname}`
+        );
+        return fileUrl;
+      } else if (contentType === "video" && req.files && req.files[`${fieldName}Video`] && req.files[`${fieldName}Video`][0]) {
+        const fileUrl = await uploadToCloudinary(
+          req.files[`${fieldName}Video`][0].buffer,
+          `${folderName}/${fieldName}`,
+          `${fieldName}-${userId}-${req.files[`${fieldName}Video`][0].originalname}`,
+          { resource_type: "video" }
+        );
+        return fileUrl;
+      } else if (contentType === "audio" && req.files && req.files[`${fieldName}Audio`] && req.files[`${fieldName}Audio`][0]) {
+        const fileUrl = await uploadToCloudinary(
+          req.files[`${fieldName}Audio`][0].buffer,
+          `${folderName}/${fieldName}`,
+          `${fieldName}-${userId}-${req.files[`${fieldName}Audio`][0].originalname}`,
+          { resource_type: "video" }
         );
         return fileUrl;
       } else if (contentType === "text" && textData) {
@@ -230,13 +262,13 @@ async function updateBook(req, res, next) {
 
     // Process all content fields
     const previewPages = req.body.previewPagesType ? 
-      await processContentField("previewPages", req.body.previewPagesType, req.body.previewPages) : undefined;
+      await processContentField("previewPages", req.body.previewPagesType, req.body.previewPagesText) : undefined;
     const tableOfContents = req.body.tableOfContentsType ? 
-      await processContentField("tableOfContents", req.body.tableOfContentsType, req.body.tableOfContents) : undefined;
+      await processContentField("tableOfContents", req.body.tableOfContentsType, req.body.tableOfContentsText) : undefined;
     const abstractPreview = req.body.abstractPreviewType ? 
-      await processContentField("abstractPreview", req.body.abstractPreviewType, req.body.abstractPreview) : undefined;
+      await processContentField("abstractPreview", req.body.abstractPreviewType, req.body.abstractPreviewText) : undefined;
     const otherPreviewPages = req.body.otherPreviewPagesType ? 
-      await processContentField("otherPreviewPages", req.body.otherPreviewPagesType, req.body.otherPreviewPages) : undefined;
+      await processContentField("otherPreviewPages", req.body.otherPreviewPagesType, req.body.otherPreviewPagesText) : undefined;
 
     const updateData = {
       ...req.body,

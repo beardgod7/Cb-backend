@@ -519,6 +519,14 @@
  *                 type: string
  *                 format: binary
  *                 description: Preview pages PDF file (for pdf type)
+ *               previewPagesVideo:
+ *                 type: string
+ *                 format: binary
+ *                 description: Preview pages video file (for video type)
+ *               previewPagesAudio:
+ *                 type: string
+ *                 format: binary
+ *                 description: Preview pages audio file (for audio type)
  *               tableOfContentsImages:
  *                 type: array
  *                 items:
@@ -529,6 +537,14 @@
  *                 type: string
  *                 format: binary
  *                 description: Table of contents PDF file (for pdf type)
+ *               tableOfContentsVideo:
+ *                 type: string
+ *                 format: binary
+ *                 description: Table of contents video file (for video type)
+ *               tableOfContentsAudio:
+ *                 type: string
+ *                 format: binary
+ *                 description: Table of contents audio file (for audio type)
  *               abstractPreviewImages:
  *                 type: array
  *                 items:
@@ -539,6 +555,14 @@
  *                 type: string
  *                 format: binary
  *                 description: Abstract preview PDF file (for pdf type)
+ *               abstractPreviewVideo:
+ *                 type: string
+ *                 format: binary
+ *                 description: Abstract preview video file (for video type)
+ *               abstractPreviewAudio:
+ *                 type: string
+ *                 format: binary
+ *                 description: Abstract preview audio file (for audio type)
  *               otherPreviewPagesImages:
  *                 type: array
  *                 items:
@@ -549,6 +573,14 @@
  *                 type: string
  *                 format: binary
  *                 description: Other preview pages PDF file (for pdf type)
+ *               otherPreviewPagesVideo:
+ *                 type: string
+ *                 format: binary
+ *                 description: Other preview pages video file (for video type)
+ *               otherPreviewPagesAudio:
+ *                 type: string
+ *                 format: binary
+ *                 description: Other preview pages audio file (for audio type)
  *     responses:
  *       201:
  *         description: Book created successfully
@@ -651,6 +683,14 @@
  *                 type: string
  *                 format: binary
  *                 description: Preview pages PDF file (for pdf type)
+ *               previewPagesVideo:
+ *                 type: string
+ *                 format: binary
+ *                 description: Preview pages video file (for video type)
+ *               previewPagesAudio:
+ *                 type: string
+ *                 format: binary
+ *                 description: Preview pages audio file (for audio type)
  *               tableOfContentsImages:
  *                 type: array
  *                 items:
@@ -661,11 +701,53 @@
  *                 type: string
  *                 format: binary
  *                 description: Table of contents PDF file (for pdf type)
+ *               tableOfContentsVideo:
+ *                 type: string
+ *                 format: binary
+ *                 description: Table of contents video file (for video type)
+ *               tableOfContentsAudio:
+ *                 type: string
+ *                 format: binary
+ *                 description: Table of contents audio file (for audio type)
  *               abstractPreviewImages:
  *                 type: array
  *                 items:
  *                   type: string
  *                   format: binary
+ *                 description: Abstract preview image files (for images type)
+ *               abstractPreviewPdf:
+ *                 type: string
+ *                 format: binary
+ *                 description: Abstract preview PDF file (for pdf type)
+ *               abstractPreviewVideo:
+ *                 type: string
+ *                 format: binary
+ *                 description: Abstract preview video file (for video type)
+ *               abstractPreviewAudio:
+ *                 type: string
+ *                 format: binary
+ *                 description: Abstract preview audio file (for audio type)
+ *               otherPreviewPagesImages:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                   format: binary
+ *                 description: Other preview page image files (for images type)
+ *               otherPreviewPagesPdf:
+ *                 type: string
+ *                 format: binary
+ *                 description: Other preview pages PDF file (for pdf type)
+ *               otherPreviewPagesVideo:
+ *                 type: string
+ *                 format: binary
+ *                 description: Other preview pages video file (for video type)
+ *               otherPreviewPagesAudio:
+ *                 type: string
+ *                 format: binary
+ *                 description: Other preview pages audio file (for audio type)
+ *     responses:
+ *       200:
+ *         description: Book updated successfully
  *                 description: Abstract preview image files (for images type)
  *               abstractPreviewPdf:
  *                 type: string
