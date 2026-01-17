@@ -23,7 +23,9 @@ const previewContentSchema = Joi.alternatives().try(
   // Array of image/video/audio URLs
   Joi.array().items(Joi.string().uri()),
   // Single PDF/video/audio URL or text content
-  Joi.string()
+  Joi.string(),
+  // Allow null for placeholder handling
+  Joi.allow(null)
 );
 
 const bookSchema = Joi.object({

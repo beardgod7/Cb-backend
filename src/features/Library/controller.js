@@ -160,6 +160,13 @@ async function createBook(req, res, next) {
       createdBy: userId,
     };
 
+    // Remove null fields to avoid validation issues
+    Object.keys(bookData).forEach(key => {
+      if (bookData[key] === null) {
+        delete bookData[key];
+      }
+    });
+
     // Parse categoryIds if it's a string
     if (typeof bookData.categoryIds === "string") {
       // Skip processing if it's just the placeholder "string"
@@ -266,6 +273,13 @@ async function updateBook(req, res, next) {
       abstractPreview: abstractPreview !== undefined ? abstractPreview : undefined,
       otherPreviewPages: otherPreviewPages !== undefined ? otherPreviewPages : undefined,
     };
+
+    // Remove null and undefined fields to avoid validation issues
+    Object.keys(updateData).forEach(key => {
+      if (updateData[key] === null || updateData[key] === undefined) {
+        delete updateData[key];
+      }
+    });
 
     // Parse categoryIds if it's a string
     if (typeof updateData.categoryIds === "string") {
