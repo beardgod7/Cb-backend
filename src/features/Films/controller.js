@@ -69,7 +69,19 @@ async function createFilm(req, res, next) {
 
     // Parse tags if it's a string
     if (typeof filmData.tags === "string") {
-      filmData.tags = JSON.parse(filmData.tags);
+      try {
+        if (filmData.tags.trim() === "") {
+          filmData.tags = [];
+        } else {
+          filmData.tags = JSON.parse(filmData.tags);
+        }
+      } catch (error) {
+        console.error("Error parsing tags:", error);
+        return res.status(400).json({ 
+          message: "Invalid tags format. Tags must be a valid JSON array, e.g., [\"tag1\",\"tag2\"]",
+          error: error.message 
+        });
+      }
     }
 
     const validatedData = await filmSchema.validateAsync(filmData);
@@ -135,7 +147,19 @@ async function updateFilm(req, res, next) {
 
     // Parse tags if it's a string
     if (typeof updateData.tags === "string") {
-      updateData.tags = JSON.parse(updateData.tags);
+      try {
+        if (updateData.tags.trim() === "") {
+          updateData.tags = [];
+        } else {
+          updateData.tags = JSON.parse(updateData.tags);
+        }
+      } catch (error) {
+        console.error("Error parsing tags:", error);
+        return res.status(400).json({ 
+          message: "Invalid tags format. Tags must be a valid JSON array, e.g., [\"tag1\",\"tag2\"]",
+          error: error.message 
+        });
+      }
     }
 
     const validatedData = await updateFilmSchema.validateAsync(updateData);
