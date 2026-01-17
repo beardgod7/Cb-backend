@@ -9,7 +9,16 @@ require("dotenv").config();
 const routes = require("./routes/index");
 
 // Import models to ensure they are registered with Sequelize
+require("./features/Authentication/model");
 require("./features/Bookstore/model");
+require("./features/Library/model");
+require("./features/Museum/model");
+require("./features/Films/model");
+require("./features/Events/model");
+require("./features/Booking/model");
+require("./features/Payment/model");
+require("./features/Travels/Tours/model");
+require("./features/Travels/Trips/model");
 
 const { errorHandler } = require("./middleware/errorhandler");
 const client = require("prom-client");
