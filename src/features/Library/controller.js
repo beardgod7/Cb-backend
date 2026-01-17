@@ -130,9 +130,14 @@ async function createBook(req, res, next) {
         );
         return fileUrl;
       } else if (contentType === "text" && textData) {
+        // Skip processing if it's just the placeholder "string"
+        if (textData === "string") {
+          return null;
+        }
         try {
           return typeof textData === "string" ? JSON.parse(textData) : textData;
         } catch (error) {
+          // If JSON parsing fails, return as plain text
           return textData;
         }
       }
@@ -157,7 +162,17 @@ async function createBook(req, res, next) {
 
     // Parse categoryIds if it's a string
     if (typeof bookData.categoryIds === "string") {
-      bookData.categoryIds = JSON.parse(bookData.categoryIds);
+      // Skip processing if it's just the placeholder "string"
+      if (bookData.categoryIds === "string") {
+        bookData.categoryIds = [];
+      } else {
+        try {
+          bookData.categoryIds = JSON.parse(bookData.categoryIds);
+        } catch (error) {
+          console.error("Error parsing categoryIds:", error);
+          bookData.categoryIds = [];
+        }
+      }
     }
 
     const categoryIds = bookData.categoryIds || [];
@@ -219,9 +234,14 @@ async function updateBook(req, res, next) {
         );
         return fileUrl;
       } else if (contentType === "text" && textData) {
+        // Skip processing if it's just the placeholder "string"
+        if (textData === "string") {
+          return undefined;
+        }
         try {
           return typeof textData === "string" ? JSON.parse(textData) : textData;
         } catch (error) {
+          // If JSON parsing fails, return as plain text
           return textData;
         }
       }
@@ -249,7 +269,17 @@ async function updateBook(req, res, next) {
 
     // Parse categoryIds if it's a string
     if (typeof updateData.categoryIds === "string") {
-      updateData.categoryIds = JSON.parse(updateData.categoryIds);
+      // Skip processing if it's just the placeholder "string"
+      if (updateData.categoryIds === "string") {
+        updateData.categoryIds = undefined;
+      } else {
+        try {
+          updateData.categoryIds = JSON.parse(updateData.categoryIds);
+        } catch (error) {
+          console.error("Error parsing categoryIds:", error);
+          updateData.categoryIds = undefined;
+        }
+      }
     }
 
     const categoryIds = updateData.categoryIds;
