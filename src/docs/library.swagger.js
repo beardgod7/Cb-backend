@@ -156,7 +156,7 @@
 
 /**
  * @swagger
- * /api/library/categories:
+ * /library/categories:
  *   get:
  *     summary: Get all library categories
  *     tags: [Library - Public]
@@ -178,7 +178,7 @@
 
 /**
  * @swagger
- * /api/library/categories/{id}:
+ * /library/categories/{id}:
  *   get:
  *     summary: Get library category by ID
  *     tags: [Library - Public]
@@ -207,7 +207,7 @@
 
 /**
  * @swagger
- * /api/library/books:
+ * /library/books:
  *   get:
  *     summary: Get all library books
  *     tags: [Library - Public]
@@ -246,7 +246,7 @@
 
 /**
  * @swagger
- * /api/library/books/featured:
+ * /library/books/featured:
  *   get:
  *     summary: Get featured library books
  *     tags: [Library - Public]
@@ -268,7 +268,7 @@
 
 /**
  * @swagger
- * /api/library/books/popular:
+ * /library/books/popular:
  *   get:
  *     summary: Get most popular library books
  *     tags: [Library - Public]
@@ -290,7 +290,7 @@
 
 /**
  * @swagger
- * /api/library/books/{id}:
+ * /library/books/{id}:
  *   get:
  *     summary: Get library book by ID
  *     tags: [Library - Public]
@@ -319,7 +319,7 @@
 
 /**
  * @swagger
- * /api/library/books/category/{categoryId}:
+ * /library/books/category/{categoryId}:
  *   get:
  *     summary: Get books by category
  *     tags: [Library - Public]
@@ -348,7 +348,7 @@
 
 /**
  * @swagger
- * /api/library/admin/categories:
+ * /library/admin/categories:
  *   post:
  *     summary: Create a new library category (Admin)
  *     tags: [Library - Admin]
@@ -389,7 +389,7 @@
 
 /**
  * @swagger
- * /api/library/admin/categories/{id}:
+ * /library/admin/categories/{id}:
  *   put:
  *     summary: Update library category (Admin)
  *     tags: [Library - Admin]
@@ -441,7 +441,7 @@
 
 /**
  * @swagger
- * /api/library/admin/books:
+ * /library/admin/books:
  *   post:
  *     summary: Create a new library book (Admin)
  *     tags: [Library - Admin]
@@ -569,7 +569,7 @@
 
 /**
  * @swagger
- * /api/library/admin/books/{id}:
+ * /library/admin/books/{id}:
  *   put:
  *     summary: Update library book (Admin)
  *     tags: [Library - Admin]
@@ -684,24 +684,15 @@
  *     responses:
  *       200:
  *         description: Book updated successfully
- *                 description: Abstract preview image files (for images type)
- *               abstractPreviewPdf:
- *                 type: string
- *                 format: binary
- *                 description: Abstract preview PDF file (for pdf type)
- *               otherPreviewPagesImages:
- *                 type: array
- *                 items:
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
  *                   type: string
- *                   format: binary
- *                 description: Other preview page image files (for images type)
- *               otherPreviewPagesPdf:
- *                 type: string
- *                 format: binary
- *                 description: Other preview pages PDF file (for pdf type)
- *     responses:
- *       200:
- *         description: Book updated successfully
+ *                 book:
+ *                   $ref: '#/components/schemas/LibraryBook'
  *       404:
  *         description: Book not found
  *   delete:

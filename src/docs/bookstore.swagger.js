@@ -117,7 +117,7 @@
 
 /**
  * @swagger
- * /api/bookstore/categories:
+ * /bookstore/categories:
  *   get:
  *     summary: Get all bookstore categories
  *     tags: [Bookstore - Public]
@@ -139,7 +139,7 @@
 
 /**
  * @swagger
- * /api/bookstore/categories/{id}:
+ * /bookstore/categories/{id}:
  *   get:
  *     summary: Get bookstore category by ID
  *     tags: [Bookstore - Public]
@@ -168,7 +168,7 @@
 
 /**
  * @swagger
- * /api/bookstore/books:
+ * /bookstore/books:
  *   get:
  *     summary: Get all bookstore books
  *     tags: [Bookstore - Public]
@@ -217,7 +217,7 @@
 
 /**
  * @swagger
- * /api/bookstore/books/featured:
+ * /bookstore/books/featured:
  *   get:
  *     summary: Get featured bookstore books
  *     tags: [Bookstore - Public]
@@ -239,7 +239,7 @@
 
 /**
  * @swagger
- * /api/bookstore/books/{id}:
+ * /bookstore/books/{id}:
  *   get:
  *     summary: Get bookstore book by ID
  *     tags: [Bookstore - Public]
@@ -268,7 +268,7 @@
 
 /**
  * @swagger
- * /api/bookstore/books/category/{categoryId}:
+ * /bookstore/books/category/{categoryId}:
  *   get:
  *     summary: Get books by category
  *     tags: [Bookstore - Public]
@@ -297,7 +297,7 @@
 
 /**
  * @swagger
- * /api/bookstore/admin/categories:
+ * /bookstore/admin/categories:
  *   post:
  *     summary: Create a new bookstore category (Admin)
  *     tags: [Bookstore - Admin]
@@ -338,7 +338,7 @@
 
 /**
  * @swagger
- * /api/bookstore/admin/categories/{id}:
+ * /bookstore/admin/categories/{id}:
  *   put:
  *     summary: Update bookstore category (Admin)
  *     tags: [Bookstore - Admin]
@@ -390,7 +390,7 @@
 
 /**
  * @swagger
- * /api/bookstore/admin/books:
+ * /bookstore/admin/books:
  *   post:
  *     summary: Create a new bookstore book (Admin)
  *     tags: [Bookstore - Admin]
@@ -474,7 +474,7 @@
 
 /**
  * @swagger
- * /api/bookstore/admin/books/{id}:
+ * /bookstore/admin/books/{id}:
  *   put:
  *     summary: Update bookstore book (Admin)
  *     tags: [Bookstore - Admin]
