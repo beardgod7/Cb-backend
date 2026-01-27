@@ -2,34 +2,34 @@ const express = require("express");
 const router = express.Router();
 const controller = require("./controller");
 const { authenticateToken } = require("../../middleware/authentication");
-const { authorizeRole } = require("../../middleware/rolemiddleware");
+const { authorize } = require("../../middleware/rolemiddleware");
 
 // Admin routes (require authentication and admin role)
 router.post(
   "/",
   authenticateToken,
-  authorizeRole(["admin"]),
+  authorize(["Admin", "SuperAdmin"]),
   controller.createPodcast
 );
 
 router.get(
   "/admin",
   authenticateToken,
-  authorizeRole(["admin"]),
+  authorize(["Admin", "SuperAdmin"]),
   controller.getAllPodcasts
 );
 
 router.put(
   "/:id",
   authenticateToken,
-  authorizeRole(["admin"]),
+  authorize(["Admin", "SuperAdmin"]),
   controller.updatePodcast
 );
 
 router.delete(
   "/:id",
   authenticateToken,
-  authorizeRole(["admin"]),
+  authorize(["Admin", "SuperAdmin"]),
   controller.deletePodcast
 );
 
