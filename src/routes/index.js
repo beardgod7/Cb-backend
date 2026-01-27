@@ -44,6 +44,10 @@ router.use("/films", filmRoutes);
 const bookstoreRoutes = require("../features/Bookstore/route");
 router.use("/bookstore", bookstoreRoutes);
 
+// Podcast
+const podcastRoutes = require("../features/Podcast/route");
+router.use("/podcast", podcastRoutes);
+
 // Catch-All for Undefined Routes
 router.use("*", (req, res) => {
   res.status(404).json({ message: "API endpoint not found" });

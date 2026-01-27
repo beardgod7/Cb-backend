@@ -19,6 +19,7 @@ require("./features/Booking/model");
 require("./features/Payment/model");
 require("./features/Travels/Tours/model");
 require("./features/Travels/Trips/model");
+require("./features/Podcast/model");
 
 const { errorHandler } = require("./middleware/errorhandler");
 const client = require("prom-client");

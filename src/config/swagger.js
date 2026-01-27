@@ -178,6 +178,10 @@ const options = {
         name: "Bookstore - Admin",
         description: "Bookstore management endpoints (Admin)",
       },
+      {
+        name: "Podcasts",
+        description: "Podcast management and browsing endpoints",
+      },
     ],
   },
   apis: [
