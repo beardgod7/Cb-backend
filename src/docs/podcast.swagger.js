@@ -27,7 +27,11 @@
  *         link:
  *           type: string
  *           format: uri
- *           description: URL link to the podcast
+ *           description: URL link to the podcast (optional)
+ *         audio:
+ *           type: string
+ *           format: uri
+ *           description: URL link to the audio file (optional)
  *         isPublished:
  *           type: boolean
  *           description: Whether the podcast is published
@@ -50,6 +54,7 @@
  *         title: "Tech Talk Weekly"
  *         description: "A weekly podcast about the latest in technology"
  *         link: "https://example.com/podcast/tech-talk-weekly"
+ *         audio: "https://example.com/audio/tech-talk-weekly.mp3"
  *         isPublished: true
  *         isLive: false
  *         createdAt: "2024-01-15T10:30:00Z"
@@ -60,7 +65,6 @@
  *       required:
  *         - title
  *         - description
- *         - link
  *       properties:
  *         title:
  *           type: string
@@ -72,7 +76,11 @@
  *         link:
  *           type: string
  *           format: uri
- *           description: URL link to the podcast
+ *           description: URL link to the podcast (optional)
+ *         audio:
+ *           type: string
+ *           format: uri
+ *           description: URL link to the audio file (optional)
  *         isPublished:
  *           type: boolean
  *           description: Whether the podcast is published
@@ -85,6 +93,7 @@
  *         title: "Tech Talk Weekly"
  *         description: "A weekly podcast about the latest in technology"
  *         link: "https://example.com/podcast/tech-talk-weekly"
+ *         audio: "https://example.com/audio/tech-talk-weekly.mp3"
  *         isPublished: false
  *         isLive: false
  *
@@ -101,7 +110,11 @@
  *         link:
  *           type: string
  *           format: uri
- *           description: URL link to the podcast
+ *           description: URL link to the podcast (optional)
+ *         audio:
+ *           type: string
+ *           format: uri
+ *           description: URL link to the audio file (optional)
  *         isPublished:
  *           type: boolean
  *           description: Whether the podcast is published
@@ -111,6 +124,7 @@
  *       example:
  *         title: "Updated Tech Talk Weekly"
  *         description: "An updated weekly podcast about the latest in technology"
+ *         audio: "https://example.com/audio/updated-tech-talk-weekly.mp3"
  *         isPublished: true
  *         isLive: true
  *

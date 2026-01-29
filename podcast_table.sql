@@ -4,7 +4,8 @@ CREATE TABLE IF NOT EXISTS "Podcasts" (
     "userId" UUID,
     "title" VARCHAR(255) NOT NULL,
     "description" TEXT NOT NULL,
-    "link" VARCHAR(255) NOT NULL,
+    "link" VARCHAR(255),
+    "audio" VARCHAR(255),
     "isPublished" BOOLEAN DEFAULT false NOT NULL,
     "isLive" BOOLEAN DEFAULT false NOT NULL,
     "createdAt" TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
@@ -20,4 +21,8 @@ CREATE INDEX IF NOT EXISTS "idx_podcasts_created_at" ON "Podcasts" ("createdAt")
 -- Add URL validation constraint
 ALTER TABLE "Podcasts" 
 ADD CONSTRAINT "check_link_format" 
-CHECK ("link" ~* '^https?://[^\s/$.?#].[^\s]*$');
+CHECK ("link" IS NULL OR "link" ~* '^https?://[^\s/$.?#].[^\s]*$');
+
+ALTER TABLE "Podcasts" 
+ADD CONSTRAINT "check_audio_format" 
+CHECK ("audio" IS NULL OR "audio" ~* '^https?://[^\s/$.?#].[^\s]*$');

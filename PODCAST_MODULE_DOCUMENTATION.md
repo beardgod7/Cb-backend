@@ -18,7 +18,8 @@ The Podcast module provides functionality for managing podcast content within th
 - userId (UUID, Foreign Key to Users)
 - title (VARCHAR(255), Required)
 - description (TEXT, Required)
-- link (VARCHAR(255), Required, URL format)
+- link (VARCHAR(255), Optional, URL format)
+- audio (VARCHAR(255), Optional, URL format)
 - isPublished (BOOLEAN, Default: false)
 - isLive (BOOLEAN, Default: false)
 - createdAt (TIMESTAMP)
@@ -47,6 +48,7 @@ POST /api/podcast
   "title": "Tech Talk Weekly",
   "description": "A weekly podcast about the latest in technology",
   "link": "https://example.com/podcast/tech-talk-weekly",
+  "audio": "https://example.com/audio/tech-talk-weekly.mp3",
   "isPublished": false,
   "isLive": false
 }
@@ -62,6 +64,7 @@ POST /api/podcast
     "title": "Tech Talk Weekly",
     "description": "A weekly podcast about the latest in technology",
     "link": "https://example.com/podcast/tech-talk-weekly",
+    "audio": "https://example.com/audio/tech-talk-weekly.mp3",
     "isPublished": false,
     "isLive": false,
     "createdAt": "2024-01-15T10:30:00Z",
@@ -73,7 +76,8 @@ POST /api/podcast
 ## Validation Rules
 - **title**: Required, 1-255 characters
 - **description**: Required, minimum 1 character
-- **link**: Required, must be valid URL format
+- **link**: Optional, must be valid URL format if provided
+- **audio**: Optional, must be valid URL format if provided
 - **isPublished**: Optional boolean, defaults to false
 - **isLive**: Optional boolean, defaults to false
 

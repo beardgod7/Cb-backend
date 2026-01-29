@@ -24,9 +24,22 @@ const Podcast = sequelize.define(
     },
     link: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
       validate: {
-        isUrl: true,
+        isUrl: {
+          args: true,
+          msg: "Link must be a valid URL"
+        }
+      },
+    },
+    audio: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      validate: {
+        isUrl: {
+          args: true,
+          msg: "Audio must be a valid URL"
+        }
       },
     },
     isPublished: {
