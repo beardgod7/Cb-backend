@@ -35,12 +35,12 @@ const Podcast = sequelize.define(
     audio: {
       type: DataTypes.STRING,
       allowNull: true,
-      validate: {
-        isUrl: {
-          args: true,
-          msg: "Audio must be a valid URL"
-        }
-      },
+      comment: "Cloudinary URL for uploaded audio file"
+    },
+    coverImage: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      comment: "Cloudinary URL for uploaded cover image"
     },
     isPublished: {
       type: DataTypes.BOOLEAN,

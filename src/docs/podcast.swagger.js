@@ -7,7 +7,6 @@
  *       required:
  *         - title
  *         - description
- *         - link
  *       properties:
  *         id:
  *           type: string
@@ -30,8 +29,10 @@
  *           description: URL link to the podcast (optional)
  *         audio:
  *           type: string
- *           format: uri
- *           description: URL link to the audio file (optional)
+ *           description: Cloudinary URL for uploaded audio file
+ *         coverImage:
+ *           type: string
+ *           description: Cloudinary URL for uploaded cover image
  *         isPublished:
  *           type: boolean
  *           description: Whether the podcast is published
@@ -54,79 +55,12 @@
  *         title: "Tech Talk Weekly"
  *         description: "A weekly podcast about the latest in technology"
  *         link: "https://example.com/podcast/tech-talk-weekly"
- *         audio: "https://example.com/audio/tech-talk-weekly.mp3"
+ *         audio: "https://res.cloudinary.com/example/video/upload/v1234567890/Podcasts/audio-file.mp3"
+ *         coverImage: "https://res.cloudinary.com/example/image/upload/v1234567890/Podcasts/cover-image.jpg"
  *         isPublished: true
  *         isLive: false
  *         createdAt: "2024-01-15T10:30:00Z"
  *         updatedAt: "2024-01-15T10:30:00Z"
- *
- *     CreatePodcastRequest:
- *       type: object
- *       required:
- *         - title
- *         - description
- *       properties:
- *         title:
- *           type: string
- *           description: Title of the podcast
- *           maxLength: 255
- *         description:
- *           type: string
- *           description: Description of the podcast
- *         link:
- *           type: string
- *           format: uri
- *           description: URL link to the podcast (optional)
- *         audio:
- *           type: string
- *           format: uri
- *           description: URL link to the audio file (optional)
- *         isPublished:
- *           type: boolean
- *           description: Whether the podcast is published
- *           default: false
- *         isLive:
- *           type: boolean
- *           description: Whether the podcast is currently live
- *           default: false
- *       example:
- *         title: "Tech Talk Weekly"
- *         description: "A weekly podcast about the latest in technology"
- *         link: "https://example.com/podcast/tech-talk-weekly"
- *         audio: "https://example.com/audio/tech-talk-weekly.mp3"
- *         isPublished: false
- *         isLive: false
- *
- *     UpdatePodcastRequest:
- *       type: object
- *       properties:
- *         title:
- *           type: string
- *           description: Title of the podcast
- *           maxLength: 255
- *         description:
- *           type: string
- *           description: Description of the podcast
- *         link:
- *           type: string
- *           format: uri
- *           description: URL link to the podcast (optional)
- *         audio:
- *           type: string
- *           format: uri
- *           description: URL link to the audio file (optional)
- *         isPublished:
- *           type: boolean
- *           description: Whether the podcast is published
- *         isLive:
- *           type: boolean
- *           description: Whether the podcast is currently live
- *       example:
- *         title: "Updated Tech Talk Weekly"
- *         description: "An updated weekly podcast about the latest in technology"
- *         audio: "https://example.com/audio/updated-tech-talk-weekly.mp3"
- *         isPublished: true
- *         isLive: true
  *
  *     PodcastListResponse:
  *       type: object
@@ -153,9 +87,40 @@
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
- *             $ref: '#/components/schemas/CreatePodcastRequest'
+ *             type: object
+ *             required:
+ *               - title
+ *               - description
+ *             properties:
+ *               title:
+ *                 type: string
+ *                 description: Title of the podcast
+ *                 maxLength: 255
+ *               description:
+ *                 type: string
+ *                 description: Description of the podcast
+ *               link:
+ *                 type: string
+ *                 format: uri
+ *                 description: URL link to the podcast (optional)
+ *               audio:
+ *                 type: string
+ *                 format: binary
+ *                 description: Audio file upload (MP3, WAV, etc.)
+ *               coverImage:
+ *                 type: string
+ *                 format: binary
+ *                 description: Cover image upload (JPG, PNG, etc.)
+ *               isPublished:
+ *                 type: boolean
+ *                 description: Whether the podcast is published
+ *                 default: false
+ *               isLive:
+ *                 type: boolean
+ *                 description: Whether the podcast is currently live
+ *                 default: false
  *     responses:
  *       201:
  *         description: Podcast created successfully
@@ -304,9 +269,35 @@
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
- *             $ref: '#/components/schemas/UpdatePodcastRequest'
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *                 description: Title of the podcast
+ *                 maxLength: 255
+ *               description:
+ *                 type: string
+ *                 description: Description of the podcast
+ *               link:
+ *                 type: string
+ *                 format: uri
+ *                 description: URL link to the podcast (optional)
+ *               audio:
+ *                 type: string
+ *                 format: binary
+ *                 description: Audio file upload (MP3, WAV, etc.)
+ *               coverImage:
+ *                 type: string
+ *                 format: binary
+ *                 description: Cover image upload (JPG, PNG, etc.)
+ *               isPublished:
+ *                 type: boolean
+ *                 description: Whether the podcast is published
+ *               isLive:
+ *                 type: boolean
+ *                 description: Whether the podcast is currently live
  *     responses:
  *       200:
  *         description: Podcast updated successfully

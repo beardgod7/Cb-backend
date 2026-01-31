@@ -3,11 +3,16 @@ const router = express.Router();
 const controller = require("./controller");
 const { authenticate } = require("../../middleware/authmiddleware");
 const { authorize } = require("../../middleware/rolemiddleware");
+const { upload } = require("../../middleware/upload");
 
 // Admin routes (require authentication and admin role)
 router.post(
   "/",
   authorize(["Admin", "SuperAdmin"]),
+  upload.fields([
+    { name: "audio", maxCount: 1 },
+    { name: "coverImage", maxCount: 1 }
+  ]),
   controller.createPodcast
 );
 
@@ -20,6 +25,10 @@ router.get(
 router.put(
   "/:id",
   authorize(["Admin", "SuperAdmin"]),
+  upload.fields([
+    { name: "audio", maxCount: 1 },
+    { name: "coverImage", maxCount: 1 }
+  ]),
   controller.updatePodcast
 );
 
