@@ -17,21 +17,33 @@ async function createPodcast(req, res, next) {
     // Handle audio file upload
     if (req.files && req.files.audio && req.files.audio[0]) {
       const audioFile = req.files.audio[0];
+      console.log("Audio file details:", {
+        originalname: audioFile.originalname,
+        mimetype: audioFile.mimetype,
+        size: audioFile.size
+      });
+      
       audioUrl = await uploadToCloudinary(
         audioFile.buffer,
         folderName,
-        `${userId}-audio-${audioFile.originalname}`,
-        "video" // Cloudinary resource type for audio files
+        `${userId}-audio-${Date.now()}-${audioFile.originalname.replace(/[^a-zA-Z0-9.-]/g, '_')}`,
+        { resource_type: "video" } // Cloudinary resource type for audio files
       );
     }
 
     // Handle cover image upload
     if (req.files && req.files.coverImage && req.files.coverImage[0]) {
       const imageFile = req.files.coverImage[0];
+      console.log("Cover image file details:", {
+        originalname: imageFile.originalname,
+        mimetype: imageFile.mimetype,
+        size: imageFile.size
+      });
+      
       coverImageUrl = await uploadToCloudinary(
         imageFile.buffer,
         folderName,
-        `${userId}-cover-${imageFile.originalname}`
+        `${userId}-cover-${Date.now()}-${imageFile.originalname.replace(/[^a-zA-Z0-9.-]/g, '_')}`
       );
     }
 
@@ -115,6 +127,11 @@ async function updatePodcast(req, res, next) {
     // Handle audio file upload
     if (req.files && req.files.audio && req.files.audio[0]) {
       const audioFile = req.files.audio[0];
+      console.log("Update - Audio file details:", {
+        originalname: audioFile.originalname,
+        mimetype: audioFile.mimetype,
+        size: audioFile.size
+      });
       
       // Delete old audio file if exists
       if (existingPodcast.audio) {
@@ -128,14 +145,19 @@ async function updatePodcast(req, res, next) {
       audioUrl = await uploadToCloudinary(
         audioFile.buffer,
         folderName,
-        `${userId}-audio-${audioFile.originalname}`,
-        "video" // Cloudinary resource type for audio files
+        `${userId}-audio-${Date.now()}-${audioFile.originalname.replace(/[^a-zA-Z0-9.-]/g, '_')}`,
+        { resource_type: "video" }
       );
     }
 
     // Handle cover image upload
     if (req.files && req.files.coverImage && req.files.coverImage[0]) {
       const imageFile = req.files.coverImage[0];
+      console.log("Update - Cover image file details:", {
+        originalname: imageFile.originalname,
+        mimetype: imageFile.mimetype,
+        size: imageFile.size
+      });
       
       // Delete old cover image if exists
       if (existingPodcast.coverImage) {
@@ -149,7 +171,7 @@ async function updatePodcast(req, res, next) {
       coverImageUrl = await uploadToCloudinary(
         imageFile.buffer,
         folderName,
-        `${userId}-cover-${imageFile.originalname}`
+        `${userId}-cover-${Date.now()}-${imageFile.originalname.replace(/[^a-zA-Z0-9.-]/g, '_')}`
       );
     }
 
