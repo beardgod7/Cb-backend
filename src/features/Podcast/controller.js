@@ -11,6 +11,10 @@ async function createPodcast(req, res, next) {
     let audioUrl = null;
     let coverImageUrl = null;
 
+    console.log("Create podcast request received");
+    console.log("Request files:", req.files);
+    console.log("Request body:", req.body);
+
     // Define dynamic folder name
     const folderName = "Podcasts";
 
@@ -20,15 +24,25 @@ async function createPodcast(req, res, next) {
       console.log("Audio file details:", {
         originalname: audioFile.originalname,
         mimetype: audioFile.mimetype,
-        size: audioFile.size
+        size: audioFile.size,
+        fieldname: audioFile.fieldname
       });
       
-      audioUrl = await uploadToCloudinary(
-        audioFile.buffer,
-        folderName,
-        `${userId}-audio-${Date.now()}-${audioFile.originalname.replace(/[^a-zA-Z0-9.-]/g, '_')}`,
-        { resource_type: "video" } // Cloudinary resource type for audio files
-      );
+      try {
+        audioUrl = await uploadToCloudinary(
+          audioFile.buffer,
+          folderName,
+          `${userId}-audio-${Date.now()}-${audioFile.originalname.replace(/[^a-zA-Z0-9.-]/g, '_')}`,
+          { resource_type: "video" } // Cloudinary resource type for audio files
+        );
+        console.log("Audio upload successful:", audioUrl);
+      } catch (uploadError) {
+        console.error("Audio upload failed:", uploadError);
+        return res.status(400).json({
+          message: "Audio upload failed",
+          error: uploadError.message
+        });
+      }
     }
 
     // Handle cover image upload
@@ -37,20 +51,32 @@ async function createPodcast(req, res, next) {
       console.log("Cover image file details:", {
         originalname: imageFile.originalname,
         mimetype: imageFile.mimetype,
-        size: imageFile.size
+        size: imageFile.size,
+        fieldname: imageFile.fieldname
       });
       
-      coverImageUrl = await uploadToCloudinary(
-        imageFile.buffer,
-        folderName,
-        `${userId}-cover-${Date.now()}-${imageFile.originalname.replace(/[^a-zA-Z0-9.-]/g, '_')}`
-      );
+      try {
+        coverImageUrl = await uploadToCloudinary(
+          imageFile.buffer,
+          folderName,
+          `${userId}-cover-${Date.now()}-${imageFile.originalname.replace(/[^a-zA-Z0-9.-]/g, '_')}`
+        );
+        console.log("Cover image upload successful:", coverImageUrl);
+      } catch (uploadError) {
+        console.error("Cover image upload failed:", uploadError);
+        return res.status(400).json({
+          message: "Cover image upload failed",
+          error: uploadError.message
+        });
+      }
     }
 
     const podcastData = {
-      ...req.body,
-      audio: audioUrl,
-      coverImage: coverImageUrl,
+      title: req.body.title,
+      description: req.body.description,
+      link: req.body.link,
+      isPublished: req.body.isPublished,
+      isLive: req.body.isLive,
     };
 
     const validatedData = await podcastSchema.validateAsync(podcastData);
@@ -68,6 +94,7 @@ async function createPodcast(req, res, next) {
       podcast: newPodcast,
     });
   } catch (error) {
+    console.error("Create podcast error:", error);
     next(error);
   }
 }
@@ -176,12 +203,23 @@ async function updatePodcast(req, res, next) {
     }
 
     const updateData = {
-      ...req.body,
+      title: req.body.title,
+      description: req.body.description,
+      link: req.body.link,
+      isPublished: req.body.isPublished,
+      isLive: req.body.isLive,
     };
 
     // Add file URLs if new files were uploaded
     if (audioUrl) updateData.audio = audioUrl;
     if (coverImageUrl) updateData.coverImage = coverImageUrl;
+
+    // Remove undefined values to avoid validation issues
+    Object.keys(updateData).forEach(key => {
+      if (updateData[key] === undefined) {
+        delete updateData[key];
+      }
+    });
 
     const validatedData = await updatePodcastSchema.validateAsync(updateData);
 
