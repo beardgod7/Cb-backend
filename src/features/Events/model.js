@@ -40,13 +40,41 @@ const Events = sequelize.define(
       type: DataTypes.ARRAY(DataTypes.STRING),
       allowNull: true,
     },
+    startAt: {
+      type: DataTypes.DATE,
+      allowNull: true,
+      comment: "ISO date-time (Africa/Lagos). Preferred over Date[]",
+    },
+    endAt: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
+    venue: {
+      type: DataTypes.JSONB,
+      allowNull: true,
+      comment: "{ name, address, mapLink, lat?, lng? }",
+    },
+    slug: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      unique: true,
+    },
+    albumId: {
+      type: DataTypes.UUID,
+      allowNull: true,
+    },
+    volunteerRoles: {
+      type: DataTypes.ARRAY(DataTypes.STRING),
+      allowNull: true,
+      defaultValue: [],
+    },
     EventHighlights: {
       type: DataTypes.JSON,
       allowNull: true,
       defaultValue: [],
     },
     Status: {
-      type: DataTypes.ENUM("past", "upcoming"),
+      type: DataTypes.ENUM("past", "upcoming", "cancelled"),
       allowNull: false,
       defaultValue: "upcoming",
     },

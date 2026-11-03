@@ -21,6 +21,8 @@ const tripSchema = Joi.object({
     .optional(),
   mapLink: Joi.string().uri().optional(),
   images: Joi.array().items(Joi.string()).optional(),
+  gallery: Joi.array().items(Joi.string()).optional(),
+  perks: Joi.array().items(Joi.string()).optional(),
   maxParticipants: Joi.number().integer().min(1).optional(),
   isActive: Joi.boolean().optional(),
   createdBy: Joi.string().uuid().optional(),
@@ -47,17 +49,23 @@ const updateTripSchema = Joi.object({
     .optional(),
   mapLink: Joi.string().uri().optional(),
   images: Joi.array().items(Joi.string()).optional(),
+  gallery: Joi.array().items(Joi.string()).optional(),
+  perks: Joi.array().items(Joi.string()).optional(),
   maxParticipants: Joi.number().integer().min(1).optional(),
   isActive: Joi.boolean().optional(),
 });
 
 const tripBookingSchema = Joi.object({
   tripId: Joi.string().uuid().required(),
-  fullName: Joi.string().required(),
+  firstName: Joi.string().optional(),
+  lastName: Joi.string().optional(),
+  fullName: Joi.string().optional(),
   email: Joi.string().email().required(),
   phoneNumber: Joi.string().required(),
   numberOfTickets: Joi.number().integer().min(1).required(),
-});
+})
+  .or("firstName", "fullName")
+  .messages({ "object.missing": "First name is required" });
 
 const tripInquirySchema = Joi.object({
   tripId: Joi.string().uuid().optional(),

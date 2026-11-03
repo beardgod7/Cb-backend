@@ -96,6 +96,7 @@ router.delete(
 
 // Public routes
 router.get("/published", controller.getPublishedPodcasts);
+router.get("/seasons", controller.getSeasons);
 router.get("/live", controller.getLivePodcasts);
 router.get("/:id", controller.getPodcastById);
 

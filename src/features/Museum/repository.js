@@ -1,5 +1,18 @@
-const { Artifact, RentalRequest, CollaborationRequest } = require("./model");
+const { Artifact, RentalRequest, CollaborationRequest, MuseumTerms } = require("./model");
 const { Op } = require("sequelize");
+
+async function getTerms() {
+  let t = await MuseumTerms.findByPk(1);
+  if (!t) t = await MuseumTerms.create({ id: 1, version: "1.0", body: "" });
+  return t;
+}
+
+async function updateTerms(data) {
+  const t = await getTerms();
+  Object.assign(t, data);
+  await t.save();
+  return t;
+}
 
 // ==================
 // Artifacts
@@ -35,6 +48,15 @@ async function getAllArtifacts(filter = {}) {
       { category: { [Op.iLike]: `%${filter.search}%` } },
       { tags: { [Op.contains]: [filter.search] } },
     ];
+  }
+
+  if (filter.page || filter.limit) {
+    return await Artifact.findAndCountAll({
+      where,
+      order: [["createdAt", "DESC"]],
+      offset: filter.offset || 0,
+      limit: filter.limit || 20,
+    });
   }
 
   return await Artifact.findAll({
@@ -184,4 +206,6 @@ module.exports = {
   getAllCollaborationRequests,
   getCollaborationRequestById,
   updateCollaborationRequestStatus,
+  getTerms,
+  updateTerms,
 };

@@ -71,22 +71,41 @@ async function createPodcast(req, res, next) {
       }
     }
 
+    const toInt = (v) => (v === undefined || v === "" ? undefined : parseInt(v, 10));
     const podcastData = {
       title: req.body.title,
       description: req.body.description,
       link: req.body.link,
+      videoUrl: req.body.videoUrl,
+      slug: req.body.slug,
+      season: toInt(req.body.season),
+      episodeNumber: toInt(req.body.episodeNumber),
+      durationSeconds: toInt(req.body.durationSeconds),
+      mediaType: req.body.mediaType,
+      guests:
+        typeof req.body.guests === "string" && req.body.guests
+          ? (() => { try { return JSON.parse(req.body.guests); } catch { return req.body.guests.split(",").map((g) => g.trim()); } })()
+          : req.body.guests,
       isPublished: req.body.isPublished,
       isLive: req.body.isLive,
     };
+    Object.keys(podcastData).forEach((k) => podcastData[k] === undefined && delete podcastData[k]);
 
     const validatedData = await podcastSchema.validateAsync(podcastData);
 
+    const publishing = validatedData.isPublished === true || validatedData.isPublished === "true";
     const completePodcastData = {
       userId,
       ...validatedData,
       audio: audioUrl,
       coverImage: coverImageUrl,
+      publishedAt: publishing ? new Date() : null,
     };
+    if (!completePodcastData.slug && validatedData.title) {
+      completePodcastData.slug =
+        validatedData.title.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") +
+        "-" + Date.now().toString(36);
+    }
 
     const newPodcast = await repository.createPodcast(completePodcastData);
     return res.status(201).json({
@@ -116,7 +135,7 @@ async function getAllPodcasts(req, res, next) {
 async function getPodcastById(req, res, next) {
   try {
     const { id } = req.params;
-    const podcast = await repository.getPodcastById(id);
+    const podcast = await repository.getByIdOrSlug(id);
 
     if (!podcast) {
       return res.status(404).json({
@@ -127,6 +146,19 @@ async function getPodcastById(req, res, next) {
     return res.status(200).json({
       message: "Podcast retrieved successfully",
       podcast,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function getSeasons(req, res, next) {
+  try {
+    const seasons = await repository.getSeasons(req.query.mediaType);
+    return res.status(200).json({
+      success: true,
+      message: "Seasons retrieved successfully",
+      data: seasons,
     });
   } catch (error) {
     next(error);
@@ -202,13 +234,34 @@ async function updatePodcast(req, res, next) {
       );
     }
 
+    const toInt = (v) => (v === undefined || v === "" ? undefined : parseInt(v, 10));
     const updateData = {
       title: req.body.title,
       description: req.body.description,
       link: req.body.link,
+      videoUrl: req.body.videoUrl,
+      slug: req.body.slug,
+      season: toInt(req.body.season),
+      episodeNumber: toInt(req.body.episodeNumber),
+      durationSeconds: toInt(req.body.durationSeconds),
+      mediaType: req.body.mediaType,
+      guests:
+        typeof req.body.guests === "string" && req.body.guests
+          ? (() => { try { return JSON.parse(req.body.guests); } catch { return req.body.guests.split(",").map((g) => g.trim()); } })()
+          : req.body.guests,
+      publishedAt: req.body.publishedAt,
       isPublished: req.body.isPublished,
       isLive: req.body.isLive,
     };
+
+    // Set publishedAt the first time it becomes published.
+    const becomingPublished =
+      (req.body.isPublished === true || req.body.isPublished === "true") &&
+      !existingPodcast.isPublished &&
+      !existingPodcast.publishedAt;
+    if (becomingPublished && !req.body.publishedAt) {
+      updateData.publishedAt = new Date();
+    }
 
     // Add file URLs if new files were uploaded
     if (audioUrl) updateData.audio = audioUrl;
@@ -287,8 +340,8 @@ async function deletePodcast(req, res, next) {
 
 async function getPublishedPodcasts(req, res, next) {
   try {
-    const { page = 1, limit = 10 } = req.query;
-    const result = await repository.getPublishedPodcasts(page, limit);
+    const { page = 1, limit = 10, mediaType, season, sort } = req.query;
+    const result = await repository.getPublishedPodcasts(page, limit, { mediaType, season, sort });
 
     return res.status(200).json({
       message: "Published podcasts retrieved successfully",
@@ -321,4 +374,5 @@ module.exports = {
   deletePodcast,
   getPublishedPodcasts,
   getLivePodcasts,
+  getSeasons,
 };

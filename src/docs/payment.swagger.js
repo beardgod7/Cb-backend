@@ -29,7 +29,13 @@
  * /payment/initialize:
  *   post:
  *     summary: Initialize a payment
+ *     description: >
+ *       Creates a payment against an existing booking/order. The amount is read
+ *       from the booking on the server (never from the client) and converted to
+ *       kobo internally. Requires a logged-in user.
  *     tags: [Payment]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -37,27 +43,25 @@
  *           schema:
  *             type: object
  *             required:
- *               - amount
- *               - email
  *               - bookingType
  *               - bookingId
  *             properties:
- *               amount:
- *                 type: number
- *                 description: Amount in the smallest currency unit (e.g., kobo for NGN)
+ *               bookingType:
+ *                 type: string
+ *                 enum: [event, tour, trip, film, library, merchandise, bookstore, museum]
+ *               bookingId:
+ *                 type: string
  *               email:
  *                 type: string
  *                 format: email
- *               currency:
+ *                 description: Optional; falls back to the booking's email
+ *               gateway:
  *                 type: string
- *                 default: NGN
- *               bookingType:
+ *                 enum: [paystack, flutterwave, stripe]
+ *                 default: paystack
+ *               callbackUrl:
  *                 type: string
- *                 enum: [event, film, tour, trip, library]
- *               bookingId:
- *                 type: string
- *               metadata:
- *                 type: object
+ *                 description: Optional; must be on the site's own domain
  *     responses:
  *       200:
  *         description: Payment initialized successfully
@@ -66,7 +70,7 @@
  *             schema:
  *               type: object
  *               properties:
- *                 status:
+ *                 success:
  *                   type: boolean
  *                 message:
  *                   type: string
@@ -75,12 +79,20 @@
  *                   properties:
  *                     authorization_url:
  *                       type: string
- *                     access_code:
- *                       type: string
  *                     reference:
  *                       type: string
+ *                     amount:
+ *                       type: number
+ *                       description: Naira (whole number)
+ *                     currency:
+ *                       type: string
+ *                       example: NGN
  *       400:
- *         $ref: '#/components/responses/BadRequestError'
+ *         description: INVALID_BOOKING_TYPE / INVALID_CALLBACK_URL
+ *       404:
+ *         description: BOOKING_NOT_FOUND
+ *       409:
+ *         description: ALREADY_PAID
  *
  * /payment/verify/{reference}:
  *   get:
@@ -93,26 +105,54 @@
  *         schema:
  *           type: string
  *         description: Payment reference to verify
+ *     description: >
+ *       Re-checks the payment with the gateway (not just the database), so a buyer
+ *       who closed the tab before the webhook arrived still gets marked paid. Safe
+ *       to call repeatedly. Returns a summary of what was bought.
  *     responses:
  *       200:
- *         description: Payment verified successfully
+ *         description: Payment verified
  *         content:
  *           application/json:
  *             schema:
  *               type: object
  *               properties:
- *                 status:
+ *                 success:
  *                   type: boolean
  *                 message:
  *                   type: string
  *                 data:
- *                   $ref: '#/components/schemas/Payment'
+ *                   type: object
+ *                   properties:
+ *                     reference: { type: string }
+ *                     status: { type: string, enum: [success, failed] }
+ *                     amount: { type: number, description: Naira }
+ *                     currency: { type: string }
+ *                     bookingType: { type: string }
+ *                     bookingId: { type: string }
+ *                     paidAt: { type: string, format: date-time }
+ *                     summary:
+ *                       type: object
+ *                       properties:
+ *                         title: { type: string }
+ *                         lines: { type: array, items: { type: string } }
+ *                         email: { type: string }
  *       404:
  *         $ref: '#/components/responses/NotFoundError'
  *
+ * /payment/history/me:
+ *   get:
+ *     summary: Current user's payment history
+ *     tags: [Payment]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Payment history
+ *
  * /payment/history/{userId}:
  *   get:
- *     summary: Get user payment history
+ *     summary: Get a user's payment history (admin only)
  *     tags: [Payment]
  *     security:
  *       - bearerAuth: []

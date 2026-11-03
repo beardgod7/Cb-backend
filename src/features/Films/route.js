@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const filmController = require("./controller");
+const extras = require("./extras");
 const { upload } = require("../../middleware/upload");
 const { authenticate } = require("../../middleware/authmiddleware");
 const { authorize } = require("../../middleware/rolemiddleware");
@@ -12,6 +13,8 @@ const { authorize } = require("../../middleware/rolemiddleware");
 // Films
 router.get("/films", filmController.getAllFilms);
 router.get("/films/featured", filmController.getFeaturedFilms);
+router.get("/films/top-week", extras.topWeek);
+router.get("/terms", extras.getTerms);
 router.get("/films/:id", filmController.getFilmById);
 
 // Screening Slots
@@ -27,7 +30,8 @@ router.post("/inquiries", filmController.createFilmInquiry);
 // Bookings
 router.post("/bookings", authenticate(), filmController.bookFilmScreening);
 router.post("/bookings/confirm-payment/:bookingId", authenticate(), filmController.confirmFilmPayment);
-router.get("/bookings/user/:userId", authenticate(), filmController.getUserFilmBookings);
+router.get("/bookings/me", authenticate(), extras.myBookings);
+router.get("/bookings/user/:userId", authorize(["Admin", "SuperAdmin"]), filmController.getUserFilmBookings);
 
 // ==================
 // Admin Routes
@@ -95,6 +99,9 @@ router.get(
   authorize(["Admin", "SuperAdmin"]),
   filmController.exportFilmBookings
 );
+
+// Terms management
+router.put("/admin/terms", authorize(["Admin", "SuperAdmin"]), extras.updateTerms);
 
 // Inquiries Management
 router.get(

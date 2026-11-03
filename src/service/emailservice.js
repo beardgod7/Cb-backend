@@ -830,7 +830,42 @@ ${message}
   }
 }
 
+/**
+ * Generic mail sender used by the newer modules (newsletter, orders, purchases,
+ * visits, transfers, etc.). Never throws: logs and resolves false on failure so a
+ * mail problem can't break the main request flow.
+ * @param {object} opts
+ * @param {string|string[]} opts.to
+ * @param {string} opts.subject
+ * @param {string} [opts.text]
+ * @param {string} [opts.html]
+ */
+async function sendMail({ to, subject, text, html }) {
+  if (!process.env.SENDGRID_API_KEY || !process.env.SENDER_EMAIL) {
+    console.warn("Email not configured; skipping send to", to);
+    return false;
+  }
+  const msg = {
+    to,
+    from: process.env.SENDER_EMAIL,
+    subject,
+    text: text || (html ? html.replace(/<[^>]+>/g, " ") : subject),
+    html: html || `<p>${text || ""}</p>`,
+  };
+  try {
+    await sgMail.send(msg);
+    return true;
+  } catch (error) {
+    console.error(
+      "Failed to send email:",
+      error.response?.body || error.message
+    );
+    return false;
+  }
+}
+
 module.exports = {
+  sendMail,
   sendVerificationCodeEmail,
   sendResetCodeEmail,
   sendRegistrationConfirmation,

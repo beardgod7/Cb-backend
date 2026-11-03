@@ -344,29 +344,44 @@ async function bookFilmScreening(req, res, next) {
 
     const availableSeats = slot.maxSeats - slot.bookedSeats;
     if (validatedData.numberOfSeats > availableSeats) {
-      return res.status(400).json({
+      return res.status(409).json({
+        success: false,
+        code: "NOT_ENOUGH_SEATS",
         message: `Only ${availableSeats} seats available`,
+        data: { seatsLeft: availableSeats },
       });
+    }
+
+    if (!validatedData.termsAccepted) {
+      return res.status(400).json({ success: false, code: "TERMS_NOT_ACCEPTED", message: "You must accept the terms" });
     }
 
     const film = await repository.getFilmById(validatedData.filmId);
     const totalAmount = film.ticketPrice * validatedData.numberOfSeats;
+    const fullName =
+      validatedData.fullName ||
+      `${validatedData.firstName || ""} ${validatedData.lastName || ""}`.trim();
 
     const bookingData = {
       ...validatedData,
+      fullName,
       userId,
       totalAmount,
+      termsAcceptedAt: new Date(),
     };
 
     const booking = await repository.createFilmBooking(bookingData);
 
     res.status(201).json({
+      success: true,
       message: "Film screening booked successfully. Please proceed to payment.",
-      booking: {
-        id: booking.id,
+      data: {
+        bookingId: booking.id,
         filmId: booking.filmId,
-        totalAmount: booking.totalAmount,
-        paymentStatus: booking.paymentStatus,
+        status: "pending_payment",
+        unitPrice: Number(film.ticketPrice),
+        numberOfSeats: booking.numberOfSeats,
+        totalAmount: Number(booking.totalAmount),
       },
     });
   } catch (err) {

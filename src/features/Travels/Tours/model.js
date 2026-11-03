@@ -33,6 +33,10 @@ const Tour = sequelize.define(
       type: DataTypes.TIME,
       allowNull: true,
     },
+    endTime: {
+      type: DataTypes.TIME,
+      allowNull: true,
+    },
     meetingPoint: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -41,10 +45,32 @@ const Tour = sequelize.define(
       type: DataTypes.TEXT,
       allowNull: true,
     },
+    venueName: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    venueAddress: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
     availableDays: {
       type: DataTypes.ARRAY(DataTypes.STRING),
       allowNull: false,
       defaultValue: [],
+    },
+    maxParticipants: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    perks: {
+      type: DataTypes.ARRAY(DataTypes.STRING),
+      defaultValue: [],
+      allowNull: true,
+    },
+    gallery: {
+      type: DataTypes.ARRAY(DataTypes.STRING(10000)),
+      defaultValue: [],
+      allowNull: true,
     },
     images: {
       type: DataTypes.ARRAY(DataTypes.STRING(10000)),
@@ -83,9 +109,17 @@ const TourBooking = sequelize.define(
       type: DataTypes.UUID,
       allowNull: true,
     },
+    firstName: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    lastName: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
     fullName: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     email: {
       type: DataTypes.STRING,

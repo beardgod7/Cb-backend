@@ -143,3 +143,8 @@ swagger/delivery/dhl-delivery-swagger.json
 priv
 old-index.txt
 config/config.json
+
+# CBAAC spec source documents (not part of the codebase)
+CBAAC-Backend-Specs.zip
+_specs_extracted/
+_specs_text/

@@ -112,10 +112,51 @@ function getDaysBetween(startDate, endDate) {
   return diffDays;
 }
 
+/**
+ * Build a minimal RFC 5545 iCalendar (.ics) string for an event.
+ * @param {object} e { uid, title, description, startAt, endAt, location, url }
+ * @returns {string}
+ */
+function buildICS(e = {}) {
+  const fmt = (d) => {
+    const dt = new Date(d);
+    if (isNaN(dt)) return "";
+    return dt.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
+  };
+  const esc = (s) =>
+    String(s || "")
+      .replace(/\\/g, "\\\\")
+      .replace(/;/g, "\\;")
+      .replace(/,/g, "\\,")
+      .replace(/\n/g, "\\n");
+
+  const now = fmt(new Date());
+  const lines = [
+    "BEGIN:VCALENDAR",
+    "VERSION:2.0",
+    "PRODID:-//CBAAC//Events//EN",
+    "CALSCALE:GREGORIAN",
+    "BEGIN:VEVENT",
+    `UID:${esc(e.uid || Date.now())}@cbaac.gov.ng`,
+    `DTSTAMP:${now}`,
+    e.startAt ? `DTSTART:${fmt(e.startAt)}` : "",
+    e.endAt ? `DTEND:${fmt(e.endAt)}` : "",
+    `SUMMARY:${esc(e.title)}`,
+    e.description ? `DESCRIPTION:${esc(e.description)}` : "",
+    e.location ? `LOCATION:${esc(e.location)}` : "",
+    e.url ? `URL:${esc(e.url)}` : "",
+    "END:VEVENT",
+    "END:VCALENDAR",
+  ].filter(Boolean);
+
+  return lines.join("\r\n");
+}
+
 module.exports = {
   getAvailableTourDates,
   isDateAvailable,
   getDateRange,
   formatDate,
   getDaysBetween,
+  buildICS,
 };

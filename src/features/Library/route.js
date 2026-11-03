@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const libraryController = require("./controller");
+const extras = require("./libraryExtras");
 const { upload } = require("../../middleware/upload");
 const { authenticate } = require("../../middleware/authmiddleware");
 const { authorize } = require("../../middleware/rolemiddleware");
@@ -13,10 +14,18 @@ const { authorize } = require("../../middleware/rolemiddleware");
 router.get("/categories", libraryController.getAllCategories);
 router.get("/categories/:id", libraryController.getCategoryById);
 
-// Books
-router.get("/books", libraryController.getAllBooks);
+// Books. When page/limit/categoryIds/sort/search are present, use the paged
+// list; otherwise fall through to the legacy handler for backward compatibility.
+router.get("/books", (req, res, next) => {
+  const q = req.query;
+  if (q.page || q.limit || q.categoryIds || q.sort) return extras.listBooks(req, res, next);
+  return libraryController.getAllBooks(req, res, next);
+});
 router.get("/books/featured", libraryController.getFeaturedBooks);
 router.get("/books/popular", libraryController.getMostPopularBooks);
+router.get("/books/new-releases", extras.newReleases);
+router.get("/books/:id/related", extras.relatedBooks);
+router.get("/books/:id/pages", extras.getPage);
 router.get("/books/:id", libraryController.getBookById);
 router.get("/books/category/:categoryId", libraryController.getBooksByCategory);
 
@@ -94,6 +103,13 @@ router.delete(
   "/admin/books/:id",
   authorize(["Admin", "SuperAdmin"]),
   libraryController.deleteBook
+);
+
+// Paged preview content
+router.post(
+  "/admin/books/:id/pages",
+  authorize(["Admin", "SuperAdmin"]),
+  extras.adminUploadPages
 );
 
 // Reading Visits Management

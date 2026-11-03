@@ -11,6 +11,8 @@ const artifactSchema = Joi.object({
   fullDescription: Joi.string().required(),
   images: Joi.array().items(Joi.string()).optional(),
   audioNarration: Joi.string().optional(),
+  audioDurationSeconds: Joi.number().integer().min(0).optional(),
+  isRentable: Joi.boolean().optional(),
   tags: Joi.array().items(Joi.string()).optional(),
   isActive: Joi.boolean().optional(),
   isFeatured: Joi.boolean().optional(),
@@ -28,21 +30,30 @@ const updateArtifactSchema = Joi.object({
   fullDescription: Joi.string().optional(),
   images: Joi.array().items(Joi.string()).optional(),
   audioNarration: Joi.string().optional(),
+  audioDurationSeconds: Joi.number().integer().min(0).optional(),
+  isRentable: Joi.boolean().optional(),
   tags: Joi.array().items(Joi.string()).optional(),
   isActive: Joi.boolean().optional(),
   isFeatured: Joi.boolean().optional(),
 });
 
+// Matches the design's Rent Artefact form. Names + renterType + terms required;
+// purpose and dates optional. organization required when renterType != individual
+// (enforced in the controller for a clear ORGANIZATION_REQUIRED code).
 const rentalRequestSchema = Joi.object({
   artifactId: Joi.string().uuid().required(),
-  fullName: Joi.string().required(),
-  organization: Joi.string().optional(),
+  firstName: Joi.string().required(),
+  lastName: Joi.string().required(),
+  fullName: Joi.string().optional(),
+  renterType: Joi.string().valid("individual", "company", "organisation").required(),
+  organization: Joi.string().allow("").optional(),
   email: Joi.string().email().required(),
-  phoneNumber: Joi.string().required(),
-  purposeOfRental: Joi.string().required(),
-  startDate: Joi.date().required(),
-  endDate: Joi.date().min(Joi.ref("startDate")).required(),
-  message: Joi.string().optional(),
+  phoneNumber: Joi.string().allow("").optional(),
+  purposeOfRental: Joi.string().allow("").optional(),
+  startDate: Joi.date().optional(),
+  endDate: Joi.date().min(Joi.ref("startDate")).optional(),
+  termsAccepted: Joi.boolean().valid(true).required(),
+  message: Joi.string().allow("").optional(),
 });
 
 const collaborationRequestSchema = Joi.object({

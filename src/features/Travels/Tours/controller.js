@@ -179,8 +179,13 @@ async function bookTour(req, res, next) {
 
     const totalAmount = tour.pricePerTicket * validatedData.numberOfTickets;
 
+    const fullName =
+      validatedData.fullName ||
+      `${validatedData.firstName || ""} ${validatedData.lastName || ""}`.trim();
+
     const bookingData = {
       ...validatedData,
+      fullName,
       userId,
       totalAmount,
     };

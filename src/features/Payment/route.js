@@ -4,18 +4,46 @@ const paymentController = require("./controller");
 const { authenticate } = require("../../middleware/authmiddleware");
 const { authorize } = require("../../middleware/rolemiddleware");
 
-// Payment initialization and verification
-router.post("/initialize", paymentController.initializePayment);
+// Initialization and verification
+router.post("/initialize", authenticate(), paymentController.initializePayment);
 router.get("/verify/:reference", paymentController.verifyPayment);
 
-// User payment history
-router.get("/history/:userId", authenticate(), paymentController.getPaymentHistory);
+// Payment history
+router.get("/history/me", authenticate(), paymentController.getPaymentHistoryMe);
+router.get(
+  "/history/:userId",
+  authorize(["Admin", "SuperAdmin"]),
+  paymentController.getPaymentHistory
+);
 
-// Admin routes
-router.get("/admin/transactions", authorize(["Admin", "SuperAdmin"]), paymentController.getAllTransactions);
-router.get("/admin/statistics", authorize(["Admin", "SuperAdmin"]), paymentController.getPaymentStatistics);
+// Bank transfer
+router.get("/bank-details", paymentController.getBankDetails);
+router.post("/transfer-notices", authenticate(), paymentController.createTransferNotice);
+router.get("/transfer-notices/me", authenticate(), paymentController.getMyTransferNotices);
+router.get(
+  "/admin/transfer-notices",
+  authorize(["Admin", "SuperAdmin"]),
+  paymentController.listTransferNotices
+);
+router.patch(
+  "/admin/transfer-notices/:id",
+  authorize(["Admin", "SuperAdmin"]),
+  paymentController.reviewTransferNotice
+);
 
-// Webhooks (no authentication needed)
+// Admin
+router.get(
+  "/admin/transactions",
+  authorize(["Admin", "SuperAdmin"]),
+  paymentController.getAllTransactions
+);
+router.get(
+  "/admin/statistics",
+  authorize(["Admin", "SuperAdmin"]),
+  paymentController.getPaymentStatistics
+);
+
+// Webhooks (no auth)
 router.post("/webhook/paystack", paymentController.paystackWebhook);
 router.post("/webhook/flutterwave", paymentController.flutterwaveWebhook);
 router.post("/webhook/stripe", paymentController.stripeWebhook);
