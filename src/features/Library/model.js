@@ -102,11 +102,21 @@ const Book = sequelize.define(
       defaultValue: "text",
       allowNull: false,
     },
-    // Scheduled date to visit library
+    // Scheduled date to visit library (legacy; visits now live in the Visits module)
     scheduledVisitDate: {
       type: DataTypes.DATEONLY,
       allowNull: true,
-      comment: "Scheduled date for library visit",
+      comment: "Legacy. A visit belongs to a user, not a book — see Visits module",
+    },
+    previewPageLimit: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 3,
+    },
+    pageCount: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
     },
     isPreviewVisible: {
       type: DataTypes.BOOLEAN,
@@ -268,9 +278,26 @@ const LibrarianContact = sequelize.define(
   }
 );
 
+// Paged preview content (pageNumber, heading, body or imageUrl).
+const LibraryBookPage = sequelize.define(
+  "LibraryBookPage",
+  {
+    id: { type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4, primaryKey: true },
+    bookId: { type: DataTypes.UUID, allowNull: false, references: { model: Book, key: "id" } },
+    pageNumber: { type: DataTypes.INTEGER, allowNull: false },
+    heading: { type: DataTypes.STRING, allowNull: true },
+    body: { type: DataTypes.TEXT, allowNull: true },
+    imageUrl: { type: DataTypes.STRING, allowNull: true },
+  },
+  { tableName: "LibraryBookPages", timestamps: true }
+);
+
 // Associations
 Book.belongsToMany(Category, { through: BookCategory, foreignKey: "bookId" });
 Category.belongsToMany(Book, { through: BookCategory, foreignKey: "categoryId" });
+
+Book.hasMany(LibraryBookPage, { foreignKey: "bookId", as: "pageRecords" });
+LibraryBookPage.belongsTo(Book, { foreignKey: "bookId", as: "book" });
 
 module.exports = {
   Category,
@@ -278,4 +305,5 @@ module.exports = {
   BookCategory,
   ReadingVisit,
   LibrarianContact,
+  LibraryBookPage,
 };

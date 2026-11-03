@@ -10,12 +10,32 @@ const sequelize = new Sequelize(databaseUrl, {
       require: true,
       rejectUnauthorized: false,
     },
+    // Keep TCP connections alive so idle sockets aren't silently dropped by the host.
+    keepAlive: true,
+    // Give up on a connection the client-side considers dead, rather than reusing it.
+    statement_timeout: 30000,
   },
   pool: {
-    max: 50,
+    max: 20,
     min: 0,
     acquire: 30000,
+    // Recycle idle connections before the managed Postgres closes them (its idle
+    // timeout is higher). This prevents "Connection terminated unexpectedly".
     idle: 10000,
+    evict: 5000,
+  },
+  // Retry a query once when the failure is a dropped/refused connection.
+  retry: {
+    max: 1,
+    match: [
+      /SequelizeConnectionError/,
+      /SequelizeConnectionRefusedError/,
+      /SequelizeHostNotReachableError/,
+      /SequelizeConnectionTimedOutError/,
+      /Connection terminated unexpectedly/i,
+      /ECONNRESET/,
+      /ETIMEDOUT/,
+    ],
   },
   logging: false,
 });

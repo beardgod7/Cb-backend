@@ -289,7 +289,8 @@ async function deleteBook(req, res, next) {
 
 async function getAllBooks(req, res, next) {
   try {
-    const { categoryId, search, featured, minPrice, maxPrice } = req.query;
+    const { categoryId, search, featured, minPrice, maxPrice, sort, page, limit } = req.query;
+    const { getPagination, buildListResponse } = require("../../utils/pagination");
 
     const filter = {};
     if (categoryId) filter.categoryId = categoryId;
@@ -297,9 +298,23 @@ async function getAllBooks(req, res, next) {
     if (featured === "true") filter.featured = true;
     if (minPrice) filter.minPrice = parseFloat(minPrice);
     if (maxPrice) filter.maxPrice = parseFloat(maxPrice);
+    if (sort) filter.sort = sort;
+
+    // Paged mode when page/limit present -> standard list envelope.
+    if (page || limit) {
+      const pg = getPagination(req.query, { defaultLimit: 20 });
+      filter.page = pg.page;
+      filter.limit = pg.limit;
+      filter.offset = pg.offset;
+      const { rows, count } = await repository.getAllBooks(filter);
+      return res.status(200).json({
+        success: true,
+        message: "Bookstore books retrieved successfully",
+        data: buildListResponse(rows, count, pg.page, pg.limit),
+      });
+    }
 
     const books = await repository.getAllBooks(filter);
-
     res.status(200).json({
       message: "Bookstore books retrieved successfully",
       data: books,

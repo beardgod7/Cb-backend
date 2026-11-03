@@ -63,6 +63,32 @@ const Film = sequelize.define(
       allowNull: false,
       defaultValue: 0,
     },
+    slug: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      unique: true,
+    },
+    venueName: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    venueAddress: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    venueMapLink: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
+    scheduleText: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    perks: {
+      type: DataTypes.ARRAY(DataTypes.STRING),
+      defaultValue: [],
+      allowNull: true,
+    },
     tags: {
       type: DataTypes.ARRAY(DataTypes.STRING),
       defaultValue: [],
@@ -214,6 +240,11 @@ const FilmBooking = sequelize.define(
       defaultValue: "pending",
       allowNull: false,
     },
+    firstName: { type: DataTypes.STRING, allowNull: true },
+    lastName: { type: DataTypes.STRING, allowNull: true },
+    termsAccepted: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
+    termsAcceptedAt: { type: DataTypes.DATE, allowNull: true },
+    termsVersion: { type: DataTypes.STRING, allowNull: true },
     reminderSent: {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
@@ -224,6 +255,17 @@ const FilmBooking = sequelize.define(
     tableName: "FilmBookings",
     timestamps: true,
   }
+);
+
+// Editable Terms & Conditions text for the Films pop-up.
+const FilmTerms = sequelize.define(
+  "FilmTerms",
+  {
+    id: { type: DataTypes.INTEGER, primaryKey: true, defaultValue: 1 },
+    version: { type: DataTypes.STRING, allowNull: false, defaultValue: "1.0" },
+    body: { type: DataTypes.TEXT, allowNull: true },
+  },
+  { tableName: "FilmTerms", timestamps: true }
 );
 
 const FilmInquiry = sequelize.define(
@@ -295,4 +337,5 @@ module.exports = {
   ScreeningSlot,
   FilmBooking,
   FilmInquiry,
+  FilmTerms,
 };

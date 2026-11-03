@@ -84,35 +84,43 @@ exports.createEventBooking = async (req, res, next) => {
 
     // Check if event is published
     if (!event.isPublished) {
-      return res.status(400).json({ message: "Event is not available for registration" });
+      return res.status(400).json({ success: false, code: "REGISTRATION_CLOSED", message: "Event is not available for registration" });
     }
 
     // Check if registration is enabled
     if (!event.registrationEnabled) {
-      return res.status(400).json({ message: "Registration is closed for this event" });
+      return res.status(400).json({ success: false, code: "REGISTRATION_CLOSED", message: "Registration is closed for this event" });
     }
 
-    // Check if volunteer registration is allowed
-    if (registrationType === "Volunteer" && !event.volunteerEnabled) {
-      return res.status(400).json({ message: "Volunteer registration is not enabled for this event" });
+    // Volunteer rules
+    if (registrationType === "Volunteer") {
+      if (!event.volunteerEnabled) {
+        return res.status(400).json({ success: false, code: "VOLUNTEERING_CLOSED", message: "Volunteer registration is not enabled for this event" });
+      }
+      if (!validatedData.role) {
+        return res.status(400).json({ success: false, code: "ROLE_REQUIRED", message: "Please select a volunteer role" });
+      }
     }
 
-    // Check registration deadline
+    // Check registration deadline (and past events)
     if (event.registrationDeadline && new Date() > new Date(event.registrationDeadline)) {
-      return res.status(400).json({ message: "Registration deadline has passed" });
+      return res.status(400).json({ success: false, code: "REGISTRATION_CLOSED", message: "Registration deadline has passed" });
+    }
+    if (event.endAt && new Date(event.endAt) < new Date()) {
+      return res.status(400).json({ success: false, code: "REGISTRATION_CLOSED", message: "This event has already ended" });
     }
 
-    // Check for duplicate booking
+    // Check for duplicate booking (same email + event + type)
     const isDuplicate = await checkDuplicateBooking(userId, EventId);
     if (isDuplicate) {
-      return res.status(400).json({ message: "You have already registered for this event" });
+      return res.status(409).json({ success: false, code: "ALREADY_REGISTERED", message: "You have already registered for this event" });
     }
 
     // Check event capacity
     if (event.maxAttendees) {
       const currentCount = await getBookingCountByEvent(EventId);
       if (currentCount >= event.maxAttendees) {
-        return res.status(400).json({ message: "Event is at full capacity" });
+        return res.status(409).json({ success: false, code: "EVENT_FULL", message: "Event is at full capacity" });
       }
     }
 
@@ -123,6 +131,7 @@ exports.createEventBooking = async (req, res, next) => {
       "PhoneNumber",
       "Email",
       "registrationType",
+      "role",
     ];
 
     // Extract unknown fields into metadata

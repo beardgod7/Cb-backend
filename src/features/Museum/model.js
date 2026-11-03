@@ -51,6 +51,17 @@ const Artifact = sequelize.define(
       type: DataTypes.STRING(1000),
       allowNull: true,
     },
+    audioDurationSeconds: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      comment: "Player shows length",
+    },
+    isRentable: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: true,
+      comment: "Hide 'Rent artefact' for items that can't leave the museum",
+    },
     tags: {
       type: DataTypes.ARRAY(DataTypes.STRING),
       defaultValue: [],
@@ -97,9 +108,21 @@ const RentalRequest = sequelize.define(
       type: DataTypes.UUID,
       allowNull: true,
     },
+    firstName: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    lastName: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
     fullName: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true, // kept for old data; firstName/lastName preferred now
+    },
+    renterType: {
+      type: DataTypes.ENUM("individual", "company", "organisation"),
+      allowNull: true,
     },
     organization: {
       type: DataTypes.STRING,
@@ -114,19 +137,28 @@ const RentalRequest = sequelize.define(
     },
     phoneNumber: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     purposeOfRental: {
       type: DataTypes.TEXT,
-      allowNull: false,
+      allowNull: true, // optional (design doesn't ask)
     },
     startDate: {
       type: DataTypes.DATEONLY,
-      allowNull: false,
+      allowNull: true,
     },
     endDate: {
       type: DataTypes.DATEONLY,
+      allowNull: true,
+    },
+    termsAccepted: {
+      type: DataTypes.BOOLEAN,
       allowNull: false,
+      defaultValue: false,
+    },
+    termsAcceptedAt: {
+      type: DataTypes.DATE,
+      allowNull: true,
     },
     message: {
       type: DataTypes.TEXT,
@@ -195,6 +227,17 @@ const CollaborationRequest = sequelize.define(
   }
 );
 
+// Editable Terms & Conditions text (same pattern as Films terms).
+const MuseumTerms = sequelize.define(
+  "MuseumTerms",
+  {
+    id: { type: DataTypes.INTEGER, primaryKey: true, defaultValue: 1 },
+    version: { type: DataTypes.STRING, allowNull: false, defaultValue: "1.0" },
+    body: { type: DataTypes.TEXT, allowNull: true },
+  },
+  { tableName: "MuseumTerms", timestamps: true }
+);
+
 // Associations
 Artifact.hasMany(RentalRequest, { foreignKey: "artifactId" });
 RentalRequest.belongsTo(Artifact, { foreignKey: "artifactId" });
@@ -203,4 +246,5 @@ module.exports = {
   Artifact,
   RentalRequest,
   CollaborationRequest,
+  MuseumTerms,
 };

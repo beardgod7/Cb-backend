@@ -70,6 +70,11 @@ const EventBooking = sequelize.define(
       allowNull: false,
       defaultValue: "Register",
     },
+    role: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      comment: "Volunteer role (required when registrationType is Volunteer)",
+    },
     attendanceStatus: {
       type: DataTypes.ENUM("registered", "confirmed", "attended", "cancelled"),
       allowNull: false,

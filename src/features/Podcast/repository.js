@@ -78,15 +78,23 @@ async function deletePodcast(id) {
   }
 }
 
-async function getPublishedPodcasts(page = 1, limit = 10) {
+async function getPublishedPodcasts(page = 1, limit = 10, filters = {}) {
   try {
     const offset = (page - 1) * limit;
+    const where = { isPublished: true };
+    if (filters.mediaType) where.mediaType = filters.mediaType;
+    if (filters.season) where.season = parseInt(filters.season, 10);
+
+    let order = [["publishedAt", "DESC"], ["createdAt", "DESC"]];
+    if (filters.sort === "newest") order = [["publishedAt", "DESC"], ["createdAt", "DESC"]];
+    else if (filters.sort === "oldest") order = [["publishedAt", "ASC"]];
+    else if (filters.season) order = [["episodeNumber", "ASC"]];
 
     const { count, rows } = await Podcast.findAndCountAll({
-      where: { isPublished: true },
+      where,
       limit: parseInt(limit),
       offset: parseInt(offset),
-      order: [["createdAt", "DESC"]],
+      order,
     });
 
     return {
@@ -98,6 +106,34 @@ async function getPublishedPodcasts(page = 1, limit = 10) {
   } catch (error) {
     throw error;
   }
+}
+
+// Season headings with counts.
+async function getSeasons(mediaType) {
+  const where = { isPublished: true, season: { [Op.ne]: null } };
+  if (mediaType) where.mediaType = mediaType;
+  const rows = await Podcast.findAll({ where, order: [["season", "DESC"]] });
+  const map = new Map();
+  for (const p of rows) {
+    const s = p.season;
+    if (!map.has(s)) map.set(s, { season: s, episodeCount: 0, latestPublishedAt: null });
+    const entry = map.get(s);
+    entry.episodeCount += 1;
+    const pub = p.publishedAt || p.createdAt;
+    if (!entry.latestPublishedAt || new Date(pub) > new Date(entry.latestPublishedAt)) {
+      entry.latestPublishedAt = pub;
+    }
+  }
+  return [...map.values()].sort((a, b) => b.season - a.season);
+}
+
+async function getByIdOrSlug(idOrSlug) {
+  let podcast = null;
+  if (/^[0-9a-f]{8}-/i.test(idOrSlug)) {
+    podcast = await Podcast.findByPk(idOrSlug);
+  }
+  if (!podcast) podcast = await Podcast.findOne({ where: { slug: idOrSlug } });
+  return podcast;
 }
 
 async function getLivePodcasts(page = 1, limit = 10) {
@@ -130,4 +166,6 @@ module.exports = {
   deletePodcast,
   getPublishedPodcasts,
   getLivePodcasts,
+  getSeasons,
+  getByIdOrSlug,
 };

@@ -58,6 +58,35 @@ const BookstoreBook = sequelize.define(
       defaultValue: [],
       allowNull: true,
     },
+    slug: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      unique: true,
+    },
+    publisher: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    format: {
+      type: DataTypes.ENUM("digital", "physical", "both"),
+      allowNull: false,
+      defaultValue: "digital",
+    },
+    fullFileKey: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      comment: "Private storage key of the full PDF/EPUB. Never returned publicly",
+    },
+    previewPageLimit: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 3,
+    },
+    pageCount: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
+    },
     // Preview pages can be array of objects {page_title, text}, array of images, or PDF
     previewPages: {
       type: DataTypes.JSONB,
@@ -155,20 +184,63 @@ const BookstoreBookCategory = sequelize.define(
   }
 );
 
+// Preview/full pages (replaces the single previewContent blob for paged reading).
+const BookPage = sequelize.define(
+  "BookPage",
+  {
+    id: { type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4, primaryKey: true },
+    bookId: { type: DataTypes.UUID, allowNull: false, references: { model: BookstoreBook, key: "id" } },
+    pageNumber: { type: DataTypes.INTEGER, allowNull: false },
+    heading: { type: DataTypes.STRING, allowNull: true },
+    body: { type: DataTypes.TEXT, allowNull: true },
+    imageUrl: { type: DataTypes.STRING, allowNull: true },
+  },
+  { tableName: "BookPages", timestamps: true }
+);
+
+// A user buys a book once.
+const BookPurchase = sequelize.define(
+  "BookPurchase",
+  {
+    id: { type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4, primaryKey: true },
+    userId: { type: DataTypes.UUID, allowNull: false },
+    bookId: { type: DataTypes.UUID, allowNull: false, references: { model: BookstoreBook, key: "id" } },
+    title: { type: DataTypes.STRING, allowNull: true },
+    price: { type: DataTypes.INTEGER, allowNull: false },
+    status: {
+      type: DataTypes.ENUM("pending_payment", "awaiting_transfer", "paid", "refunded"),
+      allowNull: false,
+      defaultValue: "pending_payment",
+    },
+    paymentReference: { type: DataTypes.STRING, allowNull: true },
+    downloadCount: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 },
+    paidAt: { type: DataTypes.DATE, allowNull: true },
+  },
+  { tableName: "BookPurchases", timestamps: true }
+);
+
 // Associations
-BookstoreBook.belongsToMany(BookstoreCategory, { 
-  through: BookstoreBookCategory, 
+BookstoreBook.belongsToMany(BookstoreCategory, {
+  through: BookstoreBookCategory,
   foreignKey: "bookId",
-  as: "categories"
+  as: "categories",
 });
-BookstoreCategory.belongsToMany(BookstoreBook, { 
-  through: BookstoreBookCategory, 
+BookstoreCategory.belongsToMany(BookstoreBook, {
+  through: BookstoreBookCategory,
   foreignKey: "categoryId",
-  as: "books"
+  as: "books",
 });
+
+BookstoreBook.hasMany(BookPage, { foreignKey: "bookId", as: "pageRecords" });
+BookPage.belongsTo(BookstoreBook, { foreignKey: "bookId", as: "book" });
+
+BookstoreBook.hasMany(BookPurchase, { foreignKey: "bookId", as: "purchases" });
+BookPurchase.belongsTo(BookstoreBook, { foreignKey: "bookId", as: "book" });
 
 module.exports = {
   BookstoreBook,
   BookstoreCategory,
   BookstoreBookCategory,
+  BookPage,
+  BookPurchase,
 };

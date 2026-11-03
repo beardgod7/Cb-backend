@@ -14,8 +14,9 @@ router.get("/artifacts", museumController.getAllArtifacts);
 router.get("/artifacts/featured", museumController.getFeaturedArtifacts);
 router.get("/artifacts/:id", museumController.getArtifactById);
 router.get("/filter-options", museumController.getFilterOptions);
+router.get("/terms", museumController.getTerms);
 
-// Rental Requests
+// Rental Requests (login recommended so /me works; still accepts anonymous submit)
 router.post("/rental-requests", museumController.createRentalRequest);
 
 // Collaboration Requests
@@ -25,9 +26,11 @@ router.post("/collaboration-requests", museumController.createCollaborationReque
 // User Routes (Authenticated)
 // ==================
 
+router.get("/rental-requests/me", authenticate(), museumController.getMyRentalRequests);
+
 router.get(
   "/rental-requests/user/:userId",
-  authenticate(),
+  authorize(["Admin", "SuperAdmin"]),
   museumController.getUserRentalRequests
 );
 
@@ -70,6 +73,13 @@ router.patch(
   "/admin/rental-requests/:id",
   authorize(["Admin", "SuperAdmin"]),
   museumController.updateRentalRequestStatus
+);
+
+// Terms management
+router.put(
+  "/admin/terms",
+  authorize(["Admin", "SuperAdmin"]),
+  museumController.updateTerms
 );
 
 // Collaboration Requests Management

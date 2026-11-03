@@ -102,16 +102,33 @@ async function getAllBooks(filter = {}) {
   }
 
   if (filter.maxPrice) {
-    whereClause.price = { 
-      ...whereClause.price, 
-      [Op.lte]: filter.maxPrice 
+    whereClause.price = {
+      ...whereClause.price,
+      [Op.lte]: filter.maxPrice,
     };
+  }
+
+  let order = [["createdAt", "DESC"]];
+  if (filter.sort === "newest") order = [["createdAt", "DESC"]];
+  else if (filter.sort === "priceAsc") order = [["price", "ASC"]];
+  else if (filter.sort === "priceDesc") order = [["price", "DESC"]];
+
+  // Paginated when page/limit supplied; otherwise return a plain list (legacy).
+  if (filter.page || filter.limit) {
+    return BookstoreBook.findAndCountAll({
+      where: whereClause,
+      include: includeClause,
+      order,
+      offset: filter.offset || 0,
+      limit: filter.limit || 20,
+      distinct: true,
+    });
   }
 
   return await BookstoreBook.findAll({
     where: whereClause,
     include: includeClause,
-    order: [["createdAt", "DESC"]],
+    order,
   });
 }
 

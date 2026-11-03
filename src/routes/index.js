@@ -15,12 +15,20 @@ const router = express.Router();
 router.use("/auth", authRoutes);
 
 // Events
+const eventExtras = require("../features/Events/extras");
+router.get("/events/:id/calendar.ics", eventExtras.getEventCalendar); // spec path
+router.get("/event/albums", eventExtras.getAlbumsByEvent); // ?eventId=
 router.use("/events", events); // Admin routes (authorize middleware handles auth)
 router.use("/event", event); // Public routes
 router.use("/eventbooking", eventbookings); // Mixed routes (auth applied per route)
 
 // Payment Gateway
 router.use("/payment", paymentRoutes);
+
+// Travels - combined (user's bookings across tours + trips)
+const travelsExtras = require("../features/Travels/extras");
+const { authenticate: authTravels } = require("../middleware/authmiddleware");
+router.get("/travels/bookings/me", authTravels(), travelsExtras.myBookings);
 
 // Travels - Tours
 router.use("/travels/tours", tourRoutes);
@@ -46,7 +54,32 @@ router.use("/bookstore", bookstoreRoutes);
 
 // Podcast
 const podcastRoutes = require("../features/Podcast/route");
-router.use("/podcast", podcastRoutes);
+router.use("/podcast", podcastRoutes); // legacy alias
+router.use("/podcasts", podcastRoutes); // spec path
+
+// Newsletter (paths are absolute: /newsletter/* and /admin/newsletter/*)
+const newsletterRoutes = require("../features/Newsletter/route");
+router.use("/", newsletterRoutes);
+
+// Merchandise & Orders (absolute paths: /merchandise/*, /orders/*, /admin/*)
+const merchandiseRoutes = require("../features/Merchandise/route");
+router.use("/", merchandiseRoutes);
+
+// Visits (shared by Library + Archives): /visits/*, /admin/visits/*
+const visitRoutes = require("../features/Visits/route");
+router.use("/", visitRoutes);
+
+// Archives: /archives/*, /admin/archives/*
+const archiveRoutes = require("../features/Archives/route");
+router.use("/", archiveRoutes);
+
+// Programmes: /programmes/*, /admin/programmes/*
+const programmeRoutes = require("../features/Programmes/route");
+router.use("/", programmeRoutes);
+
+// Health check
+const healthRoutes = require("../features/Health/route");
+router.use("/health", healthRoutes);
 
 // Catch-All for Undefined Routes
 router.use("*", (req, res) => {

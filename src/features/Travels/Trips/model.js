@@ -56,6 +56,16 @@ const Trip = sequelize.define(
       defaultValue: [],
       allowNull: true,
     },
+    gallery: {
+      type: DataTypes.ARRAY(DataTypes.STRING(10000)),
+      defaultValue: [],
+      allowNull: true,
+    },
+    perks: {
+      type: DataTypes.ARRAY(DataTypes.STRING),
+      defaultValue: [],
+      allowNull: true,
+    },
     maxParticipants: {
       type: DataTypes.INTEGER,
       allowNull: true,
@@ -97,9 +107,17 @@ const TripBooking = sequelize.define(
       type: DataTypes.UUID,
       allowNull: true,
     },
+    firstName: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    lastName: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
     fullName: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     email: {
       type: DataTypes.STRING,

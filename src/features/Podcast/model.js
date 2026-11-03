@@ -42,6 +42,42 @@ const Podcast = sequelize.define(
       allowNull: true,
       comment: "Cloudinary URL for uploaded cover image"
     },
+    videoUrl: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    slug: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      unique: true,
+    },
+    season: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    episodeNumber: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    durationSeconds: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    mediaType: {
+      type: DataTypes.ENUM("audio", "video"),
+      allowNull: false,
+      defaultValue: "audio",
+    },
+    guests: {
+      type: DataTypes.ARRAY(DataTypes.STRING),
+      allowNull: true,
+      defaultValue: [],
+    },
+    publishedAt: {
+      type: DataTypes.DATE,
+      allowNull: true,
+      comment: "Set when isPublished turns true; editable",
+    },
     isPublished: {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
@@ -56,6 +92,14 @@ const Podcast = sequelize.define(
   {
     tableName: "Podcasts",
     timestamps: true,
+    indexes: [
+      {
+        unique: true,
+        fields: ["season", "episodeNumber"],
+        name: "podcast_season_episode_unique",
+        where: { season: { [require("sequelize").Op.ne]: null } },
+      },
+    ],
   }
 );
 

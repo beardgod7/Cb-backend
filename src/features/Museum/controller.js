@@ -11,6 +11,7 @@ const {
   sendRentalRequestNotification,
   sendCollaborationRequestNotification,
 } = require("../../service/emailservice");
+const { ok, AppError } = require("../../utils/apiResponse");
 
 // ==================
 // Artifacts (Admin)
@@ -174,7 +175,8 @@ async function deleteArtifact(req, res, next) {
 
 async function getAllArtifacts(req, res, next) {
   try {
-    const { country, category, era, search, featured } = req.query;
+    const { country, category, era, search, featured, page, limit } = req.query;
+    const { getPagination, buildListResponse } = require("../../utils/pagination");
 
     const filter = {};
     if (country) filter.country = country;
@@ -183,8 +185,20 @@ async function getAllArtifacts(req, res, next) {
     if (search) filter.search = search;
     if (featured === "true") filter.featured = true;
 
-    const artifacts = await repository.getAllArtifacts(filter);
+    if (page || limit) {
+      const pg = getPagination(req.query, { defaultLimit: 20 });
+      filter.page = pg.page;
+      filter.limit = pg.limit;
+      filter.offset = pg.offset;
+      const { rows, count } = await repository.getAllArtifacts(filter);
+      return res.status(200).json({
+        success: true,
+        message: "Artifacts retrieved successfully",
+        data: buildListResponse(rows, count, pg.page, pg.limit),
+      });
+    }
 
+    const artifacts = await repository.getAllArtifacts(filter);
     res.status(200).json({
       message: "Artifacts retrieved successfully",
       data: artifacts,
@@ -251,38 +265,82 @@ async function createRentalRequest(req, res, next) {
     const validatedData = await rentalRequestSchema.validateAsync(req.body);
     const userId = req.userId || null;
 
-    const artifact = await repository.getArtifactById(validatedData.artifactId);
-    if (!artifact) {
-      return res.status(404).json({ message: "Artifact not found" });
+    if (!validatedData.termsAccepted) {
+      throw new AppError("TERMS_NOT_ACCEPTED", "You must accept the terms", 400);
+    }
+    if (validatedData.renterType !== "individual" && !validatedData.organization) {
+      throw new AppError("ORGANIZATION_REQUIRED", "Organisation name is required", 400);
     }
 
+    const artifact = await repository.getArtifactById(validatedData.artifactId);
+    if (!artifact) {
+      throw new AppError("NOT_FOUND", "Artifact not found", 404);
+    }
+    if (artifact.isRentable === false) {
+      throw new AppError("NOT_RENTABLE", "This artefact cannot be rented", 400);
+    }
+
+    const fullName = `${validatedData.firstName} ${validatedData.lastName}`.trim();
     const requestData = {
       ...validatedData,
+      fullName,
       userId,
+      termsAcceptedAt: new Date(),
     };
 
     const request = await repository.createRentalRequest(requestData);
 
-    // Send confirmation to user
-    await sendRentalRequestConfirmation(validatedData.email, {
-      fullName: validatedData.fullName,
-      artifactTitle: artifact.title,
-      identificationNumber: artifact.identificationNumber,
-      startDate: validatedData.startDate,
-      endDate: validatedData.endDate,
-    });
+    // Emails (best-effort).
+    try {
+      await sendRentalRequestConfirmation(validatedData.email, {
+        fullName,
+        artifactTitle: artifact.title,
+        identificationNumber: artifact.identificationNumber,
+        startDate: validatedData.startDate,
+        endDate: validatedData.endDate,
+      });
+      await sendRentalRequestNotification({
+        ...validatedData,
+        fullName,
+        artifactTitle: artifact.title,
+        identificationNumber: artifact.identificationNumber,
+      });
+    } catch (e) {
+      console.error("Rental email failed:", e.message);
+    }
 
-    // Send notification to admin
-    await sendRentalRequestNotification({
-      ...validatedData,
-      artifactTitle: artifact.title,
-      identificationNumber: artifact.identificationNumber,
+    return ok(res, {
+      status: 201,
+      message: "Your request has been sent to CBAAC. You will receive a response via email.",
+      data: { id: request.id, status: request.status },
     });
+  } catch (err) {
+    next(err);
+  }
+}
 
-    res.status(201).json({
-      message: "Rental request submitted successfully. Confirmation email sent.",
-      request,
-    });
+async function getMyRentalRequests(req, res, next) {
+  try {
+    const requests = await repository.getRentalRequestsByUser(req.userId);
+    return ok(res, { message: "Your rental requests", data: requests });
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function getTerms(req, res, next) {
+  try {
+    const t = await repository.getTerms();
+    return ok(res, { message: "Museum terms", data: { version: t.version, body: t.body } });
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function updateTerms(req, res, next) {
+  try {
+    const t = await repository.updateTerms({ version: req.body.version, body: req.body.body });
+    return ok(res, { message: "Museum terms updated", data: { version: t.version, body: t.body } });
   } catch (err) {
     next(err);
   }
@@ -402,6 +460,9 @@ module.exports = {
   getAllRentalRequests,
   updateRentalRequestStatus,
   getUserRentalRequests,
+  getMyRentalRequests,
+  getTerms,
+  updateTerms,
   createCollaborationRequest,
   getAllCollaborationRequests,
   updateCollaborationRequestStatus,

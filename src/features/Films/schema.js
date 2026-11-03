@@ -14,6 +14,11 @@ const filmSchema = Joi.object({
   previewVideo: Joi.string().optional(),
   fullVideo: Joi.string().optional(),
   ticketPrice: Joi.number().min(0).required(),
+  venueName: Joi.string().optional(),
+  venueAddress: Joi.string().optional(),
+  venueMapLink: Joi.string().uri().optional(),
+  scheduleText: Joi.string().optional(),
+  perks: Joi.array().items(Joi.string()).optional(),
   tags: Joi.array().items(Joi.string()).optional(),
   isActive: Joi.boolean().optional(),
   isFeatured: Joi.boolean().optional(),
@@ -34,6 +39,11 @@ const updateFilmSchema = Joi.object({
   previewVideo: Joi.string().optional(),
   fullVideo: Joi.string().optional(),
   ticketPrice: Joi.number().min(0).optional(),
+  venueName: Joi.string().optional(),
+  venueAddress: Joi.string().optional(),
+  venueMapLink: Joi.string().uri().optional(),
+  scheduleText: Joi.string().optional(),
+  perks: Joi.array().items(Joi.string()).optional(),
   tags: Joi.array().items(Joi.string()).optional(),
   isActive: Joi.boolean().optional(),
   isFeatured: Joi.boolean().optional(),
@@ -51,11 +61,16 @@ const screeningSlotSchema = Joi.object({
 const filmBookingSchema = Joi.object({
   filmId: Joi.string().uuid().required(),
   screeningSlotId: Joi.string().uuid().required(),
-  fullName: Joi.string().required(),
+  firstName: Joi.string().optional(),
+  lastName: Joi.string().optional(),
+  fullName: Joi.string().optional(),
   email: Joi.string().email().required(),
   phoneNumber: Joi.string().required(),
   numberOfSeats: Joi.number().integer().min(1).max(10).required(),
-});
+  termsAccepted: Joi.boolean().valid(true).required(),
+})
+  .or("firstName", "fullName")
+  .messages({ "object.missing": "First name is required" });
 
 const filmInquirySchema = Joi.object({
   filmId: Joi.string().uuid().optional(),

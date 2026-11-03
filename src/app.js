@@ -20,6 +20,17 @@ require("./features/Payment/model");
 require("./features/Travels/Tours/model");
 require("./features/Travels/Trips/model");
 require("./features/Podcast/model");
+require("./features/Newsletter/model");
+require("./features/Merchandise/model");
+require("./features/Visits/model");
+require("./features/Archives/model");
+require("./features/Programmes/model");
+require("./features/Archives/visitResource");
+require("./features/Library/visitResource");
+// Register feature booking handlers with the Payment registry.
+require("./features/Payment/handlers");
+require("./features/Merchandise/paymentHandler");
+require("./features/Bookstore/paymentHandler");
 
 const { errorHandler } = require("./middleware/errorhandler");
 const client = require("prom-client");
@@ -64,29 +75,38 @@ app.use(
   })
 );
 
-// Allowed frontend origins
-// const allowedOrigins = [
-//   "*",
-//   "http://localhost:3000",
-//   //"https://your-production-frontend.com", // ✅ Replace with actual frontend production URL
-// ];
+// Allowed frontend origins. In development (or when CORS_ALLOW_ALL=true) any
+// origin is accepted; in production only the site's domains + localhost are.
+const envOrigins = (process.env.CORS_ORIGINS || "")
+  .split(",")
+  .map((o) => o.trim())
+  .filter(Boolean);
 
-// // Proper CORS config
-// app.use(
-//   cors({
-//     origin: function (origin, callback) {
-//       if (!origin || allowedOrigins.includes(origin)) {
-//         callback(null, true);
-//       } else {
-//         callback(new Error("CORS not allowed from origin: " + origin));
-//       }
-//     },
-//     credentials: false,
-//     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
-//   })
-// );
+const allowedOrigins = [
+  "http://localhost:3000",
+  "http://localhost:5173",
+  "https://cbaac.gov.ng",
+  "https://www.cbaac.gov.ng",
+  ...envOrigins,
+];
 
-app.use(cors({ origin: '*', credentials: false }));
+const allowAllCors =
+  process.env.CORS_ALLOW_ALL === "true" ||
+  process.env.NODE_ENV !== "production";
+
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      // Non-browser clients (no Origin header) and allowlisted origins pass.
+      if (!origin || allowAllCors || allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      return callback(new Error("CORS not allowed from origin: " + origin));
+    },
+    credentials: false,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  })
+);
 
 // Handle preflight requests// Metrics endpoint for Prometheus to scrape
 app.get("/metrics", async (req, res) => {
@@ -104,7 +124,7 @@ app.use(express.urlencoded({ extended: false }));
 // Swagger Documentation
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
   customCss: '.swagger-ui .topbar { display: none }',
-  customSiteTitle: "VTB API Documentation",
+  customSiteTitle: "CBAAC API",
 }));
 
 // Routes

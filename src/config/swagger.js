@@ -4,12 +4,12 @@ const options = {
   definition: {
     openapi: "3.0.0",
     info: {
-      title: "VTB Backend API",
+      title: "CBAAC API",
       version: "1.0.0",
-      description: "Comprehensive API for managing events, bookings, films, library, museum, and travel services",
+      description: "CBAAC backend API for payments, merchandise, archives, library, museum, travels, events, films, podcasts and programmes.",
       contact: {
         name: "API Support",
-        email: "support@vtb.com",
+        email: "info@cbaac.gov.ng",
       },
     },
     servers: [
@@ -181,6 +181,38 @@ const options = {
       {
         name: "Podcasts",
         description: "Podcast management and browsing endpoints",
+      },
+      {
+        name: "Accounts & Profile",
+        description: "Sign-up, OTP verification, profile, password and addresses",
+      },
+      {
+        name: "Newsletter",
+        description: "Newsletter subscription (subscribe/confirm/unsubscribe) and admin list/export",
+      },
+      {
+        name: "Merchandise & Orders",
+        description: "Shop products, cart quote, orders and fulfilment",
+      },
+      {
+        name: "Visits",
+        description: "Reading/archive visit booking shared by Library and Archives",
+      },
+      {
+        name: "Archives",
+        description: "Archive collections, items, paged reader and admin CRUD",
+      },
+      {
+        name: "Programmes",
+        description: "Programmes and yearly editions (e.g. Black History Month)",
+      },
+      {
+        name: "Payment",
+        description: "Payment initialize/verify, bank transfer and webhooks",
+      },
+      {
+        name: "Health",
+        description: "Service health check",
       },
     ],
   },
