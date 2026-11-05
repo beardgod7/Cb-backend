@@ -40,19 +40,23 @@ const sequelize = new Sequelize(databaseUrl, {
   logging: false,
 });
 
-sequelize
+// Keep initialization as an explicit promise so server startup can wait for
+// authentication and model synchronization before running any seeds.
+const initializationPromise = sequelize
   .authenticate()
   .then(() => {
     console.log("Database connected successfully!");
 
-    // 🔄 Auto-sync all defined models
+    // Auto-sync all defined models before seeders query their tables.
     return sequelize.sync({ alter: true });
   })
   .then(() => {
     console.log("All models were synchronized successfully.");
-  })
-  .catch((err) => {
-    console.error("Error connecting to the database:", err);
+    return sequelize;
   });
+
+// Expose the promise on the Sequelize instance for server.js. Do not catch here:
+// startup must know when the database/schema initialization failed.
+sequelize.initializationPromise = initializationPromise;
 
 module.exports = sequelize;
