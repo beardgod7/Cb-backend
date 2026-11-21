@@ -4,7 +4,6 @@ const { authenticate } = require("../middleware/authmiddleware");
 const authRoutes = require("../features/Authentication/routes");
 const events = require("../features/Events/route");
 const eventbookings = require("../features/Booking/route");
-const event = require("../features/Events/routes");
 const paymentRoutes = require("../features/Payment/route");
 const tourRoutes = require("../features/Travels/Tours/route");
 const tripRoutes = require("../features/Travels/Trips/route");
@@ -16,10 +15,9 @@ router.use("/auth", authRoutes);
 
 // Events
 const eventExtras = require("../features/Events/extras");
-router.get("/events/:id/calendar.ics", eventExtras.getEventCalendar); // spec path
-router.get("/event/albums", eventExtras.getAlbumsByEvent); // ?eventId=
-router.use("/events", events); // Admin routes (authorize middleware handles auth)
-router.use("/event", event); // Public routes
+router.get("/events/:id/calendar.ics", eventExtras.getEventCalendar); // Calendar export
+router.get("/events/:id/albums", eventExtras.getAlbumsByEvent); // Albums for event
+router.use("/events", events); // Both admin and public routes under /events
 router.use("/eventbooking", eventbookings); // Mixed routes (auth applied per route)
 
 // Payment Gateway
@@ -54,8 +52,7 @@ router.use("/bookstore", bookstoreRoutes);
 
 // Podcast
 const podcastRoutes = require("../features/Podcast/route");
-router.use("/podcast", podcastRoutes); // legacy alias
-router.use("/podcasts", podcastRoutes); // spec path
+router.use("/podcasts", podcastRoutes); // All podcast routes (admin + public)
 
 // Newsletter (paths are absolute: /newsletter/* and /admin/newsletter/*)
 const newsletterRoutes = require("../features/Newsletter/route");
@@ -76,6 +73,10 @@ router.use("/", archiveRoutes);
 // Programmes: /programmes/*, /admin/programmes/*
 const programmeRoutes = require("../features/Programmes/route");
 router.use("/", programmeRoutes);
+
+// Admin: /admin/uploads and other admin utilities
+const adminRoutes = require("../features/Admin/route");
+router.use("/admin", adminRoutes);
 
 // Health check
 const healthRoutes = require("../features/Health/route");

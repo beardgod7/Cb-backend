@@ -63,7 +63,7 @@ const podcastUpload = multer({
 
 // Admin routes (require authentication and admin role)
 router.post(
-  "/",
+  "/admin",
   authorize(["Admin", "SuperAdmin"]),
   podcastUpload.fields([
     { name: "audio", maxCount: 1 },
@@ -79,7 +79,7 @@ router.get(
 );
 
 router.put(
-  "/:id",
+  "/admin/:id",
   authorize(["Admin", "SuperAdmin"]),
   podcastUpload.fields([
     { name: "audio", maxCount: 1 },
@@ -89,7 +89,7 @@ router.put(
 );
 
 router.delete(
-  "/:id",
+  "/admin/:id",
   authorize(["Admin", "SuperAdmin"]),
   controller.deletePodcast
 );
@@ -99,5 +99,6 @@ router.get("/published", controller.getPublishedPodcasts);
 router.get("/seasons", controller.getSeasons);
 router.get("/live", controller.getLivePodcasts);
 router.get("/:id", controller.getPodcastById);
+router.get("/", controller.getAllPodcasts);
 
 module.exports = router;

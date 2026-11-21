@@ -106,6 +106,11 @@ router.delete(
 );
 
 // Paged preview content
+router.get(
+  "/admin/books/:id/pages",
+  authorize(["Admin", "SuperAdmin"]),
+  extras.adminGetBookPages
+);
 router.post(
   "/admin/books/:id/pages",
   authorize(["Admin", "SuperAdmin"]),

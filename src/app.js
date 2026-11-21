@@ -90,6 +90,9 @@ const allowedOrigins = [
   "http://localhost:5364",
   "https://cbaac.gov.ng",
   "https://www.cbaac.gov.ng",
+  "https://admin.cbaac.gov.ng",
+  "https://cbaacdev.netlify.app",
+  "https://admincbaacdev.netlify.app",
   ...envOrigins,
 ];
 

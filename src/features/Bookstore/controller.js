@@ -7,6 +7,31 @@ const {
 } = require("./schema");
 const { uploadToCloudinary } = require("../../service/upload/cloudinaryuploader");
 
+// Helper function to generate slug from title
+function generateSlug(title) {
+  return String(title)
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, "") // Remove special chars
+    .replace(/\s+/g, "-") // Replace spaces with hyphens
+    .replace(/-+/g, "-") // Replace multiple hyphens with single
+    .replace(/^-+|-+$/g, ""); // Remove leading/trailing hyphens
+}
+
+// Helper function to generate clean file name
+function generateCleanFileName(title, extension) {
+  const slug = generateSlug(title);
+  // Ensure extension doesn't have leading dot, then add it
+  const ext = extension.startsWith(".") ? extension : `.${extension}`;
+  return `cover-${slug}${ext}`;
+}
+
+// Helper function to get file extension from filename
+function getFileExtension(filename) {
+  const match = filename.match(/\.[^.]*$/);
+  return match ? match[0] : "";
+}
+
 // ==================
 // Categories (Admin)
 // ==================
@@ -95,14 +120,17 @@ async function createBook(req, res, next) {
     const userId = req.userId;
     let coverPageUrl = null;
     let previewPagesData = null;
+    let previewPdfUrl = null;
     const folderName = "Bookstore/Books";
 
-    // Upload cover page
+    // Upload cover page with clean filename
     if (req.files && req.files.coverPage && req.files.coverPage[0]) {
+      const ext = getFileExtension(req.files.coverPage[0].originalname);
+      const cleanFileName = generateCleanFileName(req.body.title || "book", ext);
       coverPageUrl = await uploadToCloudinary(
         req.files.coverPage[0].buffer,
         folderName,
-        `cover-${userId}-${req.files.coverPage[0].originalname}`
+        cleanFileName
       );
     }
 
@@ -130,6 +158,7 @@ async function createBook(req, res, next) {
         `${folderName}/Previews`,
         `preview-${userId}-${req.files.previewPdf[0].originalname}`
       );
+      previewPdfUrl = fileUrl;
       previewPagesData = fileUrl;
     } else if (previewType === "text" && req.body.previewPages) {
       // Parse text preview pages
@@ -140,10 +169,15 @@ async function createBook(req, res, next) {
       }
     }
 
+    // Generate slug from title
+    const slug = generateSlug(req.body.title);
+
     const bookData = {
       ...req.body,
+      slug,
       coverPage: coverPageUrl,
       previewPages: previewPagesData,
+      previewPdfUrl: previewPdfUrl || req.body.previewPdfUrl,
       previewType,
       createdBy: userId,
     };
@@ -189,14 +223,24 @@ async function updateBook(req, res, next) {
     const userId = req.userId;
     let coverPageUrl = null;
     let previewPagesData = null;
+    let previewPdfUrl = null;
     const folderName = "Bookstore/Books";
 
-    // Upload new cover page if provided
+    // Get current book to check if slug needs updating
+    const currentBook = await repository.getBookById(id);
+    if (!currentBook) {
+      return res.status(404).json({ message: "Book not found" });
+    }
+
+    // Upload new cover page if provided (with clean filename)
     if (req.files && req.files.coverPage && req.files.coverPage[0]) {
+      const ext = getFileExtension(req.files.coverPage[0].originalname);
+      const title = req.body.title || currentBook.title;
+      const cleanFileName = generateCleanFileName(title, ext);
       coverPageUrl = await uploadToCloudinary(
         req.files.coverPage[0].buffer,
         folderName,
-        `cover-${userId}-${req.files.coverPage[0].originalname}`
+        cleanFileName
       );
     }
 
@@ -222,6 +266,7 @@ async function updateBook(req, res, next) {
         `${folderName}/Previews`,
         `preview-${userId}-${req.files.previewPdf[0].originalname}`
       );
+      previewPdfUrl = fileUrl;
       previewPagesData = fileUrl;
     } else if (previewType === "text" && req.body.previewPages) {
       try {
@@ -231,10 +276,19 @@ async function updateBook(req, res, next) {
       }
     }
 
+    // Generate or keep slug
+    let slug = currentBook.slug;
+    if (req.body.title && req.body.title !== currentBook.title) {
+      // Title changed, regenerate slug but keep it stable
+      slug = slug || generateSlug(req.body.title);
+    }
+
     const updateData = {
       ...req.body,
+      slug,
       coverPage: coverPageUrl || undefined,
       previewPages: previewPagesData !== null ? previewPagesData : undefined,
+      previewPdfUrl: previewPdfUrl || req.body.previewPdfUrl || undefined,
     };
 
     // Parse editors if it's a string

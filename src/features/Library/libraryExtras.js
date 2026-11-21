@@ -132,10 +132,40 @@ async function adminUploadPages(req, res, next) {
   }
 }
 
+// GET /library/admin/books/:id/pages (batch get all pages)
+async function adminGetBookPages(req, res, next) {
+  try {
+    const book = await Book.findByPk(req.params.id);
+    if (!book) throw new AppError("RESOURCE_NOT_FOUND", "Book not found", 404);
+
+    const pages = await LibraryBookPage.findAll({
+      where: { bookId: book.id },
+      order: [["pageNumber", "ASC"]],
+    });
+
+    return ok(res, {
+      message: "Book pages retrieved",
+      data: {
+        pageCount: book.pageCount,
+        previewPageLimit: book.previewPageLimit,
+        pages: pages.map((p) => ({
+          pageNumber: p.pageNumber,
+          heading: p.heading,
+          body: p.body,
+          imageUrl: p.imageUrl,
+        })),
+      },
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
 module.exports = {
   listBooks,
   newReleases,
   relatedBooks,
   getPage,
   adminUploadPages,
+  adminGetBookPages,
 };

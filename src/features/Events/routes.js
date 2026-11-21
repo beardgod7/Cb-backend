@@ -9,8 +9,18 @@ const {
   getUpcomingEvents,
 } = require("./controller");
 const { getEventCalendar, getAlbumsByEvent } = require("./extras");
+const { toCamelCase } = require("../../utils/responseNormalizer");
 
 const router = express.Router();
+
+// Helper to normalize event responses
+function normalizeEventResponse(res, statusCode, message, data) {
+  return res.status(statusCode).json({
+    success: true,
+    message,
+    data: Array.isArray(data) ? data.map(toCamelCase) : toCamelCase(data),
+  });
+}
 
 // Public routes
 router.get("/albums", getAlbumsByEvent); // supports ?eventId=
