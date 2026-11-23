@@ -113,10 +113,13 @@ const origin = (origin, callback) => {
   // Allow requests with no origin (like mobile apps or curl requests)
   if (!origin) return callback(null, true);
 
-  if (allowAllCors) {
-    // In development, allow all origins
+  // Always allow in non-production environments
+  if (process.env.NODE_ENV !== "production") {
     callback(null, true);
-  } else if (allowedOrigins.includes(origin)) {
+    return;
+  }
+
+  if (allowedOrigins.includes(origin)) {
     // In production, only allow whitelisted origins
     callback(null, true);
   } else {
