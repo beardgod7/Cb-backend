@@ -119,12 +119,11 @@ app.use(
   })
 );
 
-// Handle preflight requests// Metrics endpoint for Prometheus to scrape
+// Metrics endpoint for Prometheus to scrape
 app.get("/metrics", async (req, res) => {
   res.set("Content-Type", register.contentType);
   res.end(await register.metrics());
 });
-app.options("*", cors());
 
 // Middleware setup
 app.use(helmet());
