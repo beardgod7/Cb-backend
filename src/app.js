@@ -108,26 +108,9 @@ const allowAllCors =
   process.env.CORS_ALLOW_ALL === "true" ||
   process.env.NODE_ENV !== "production";
 
-// TEMPORARY: Allow all origins for debugging CORS issues
-const DEBUG_MODE = true;
-
 app.use(
   cors({
-    origin: function (origin, callback) {
-      // DEBUG: Accept all origins to test if CORS is truly the issue
-      if (DEBUG_MODE) {
-        console.log(`Request from origin: ${origin}`);
-        return callback(null, true);
-      }
-      
-      // Non-browser clients (no Origin header) and allowlisted origins pass.
-      if (!origin || allowAllCors || allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      }
-      // Log CORS rejections for debugging
-      console.warn(`CORS rejected origin: ${origin}`);
-      return callback(new Error("CORS not allowed from origin: " + origin));
-    },
+    origin: true, // Accept all origins
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
