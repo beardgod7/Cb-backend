@@ -75,13 +75,7 @@ app.use(
   })
 );
 
-// Allowed frontend origins. In development (or when CORS_ALLOW_ALL=true) any
-// origin is accepted; in production only the site's domains + localhost are.
-const envOrigins = (process.env.CORS_ORIGINS || "")
-  .split(",")
-  .map((o) => o.trim())
-  .filter(Boolean);
-
+// Allowed frontend origins
 const allowedOrigins = [
   "http://localhost:3000",
   "http://localhost:5173",
@@ -101,7 +95,6 @@ const allowedOrigins = [
   // Admin domains
   "https://admin.cbaac.gov.ng",
   "https://www.admin.cbaac.gov.ng",
-  ...envOrigins,
 ];
 
 // CORS configuration - allow all origins
