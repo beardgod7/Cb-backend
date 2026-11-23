@@ -108,9 +108,26 @@ const allowAllCors =
   process.env.CORS_ALLOW_ALL === "true" ||
   process.env.NODE_ENV !== "production";
 
+// CORS origin validation function
+const origin = (origin, callback) => {
+  // Allow requests with no origin (like mobile apps or curl requests)
+  if (!origin) return callback(null, true);
+
+  if (allowAllCors) {
+    // In development, allow all origins
+    callback(null, true);
+  } else if (allowedOrigins.includes(origin)) {
+    // In production, only allow whitelisted origins
+    callback(null, true);
+  } else {
+    // Origin not allowed
+    callback(new Error("CORS not allowed from origin: " + origin));
+  }
+};
+
 app.use(
   cors({
-    origin: true, // Accept all origins
+    origin,
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
