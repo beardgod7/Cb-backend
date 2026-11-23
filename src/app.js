@@ -88,11 +88,19 @@ const allowedOrigins = [
   "http://localhost:5263",
   "http://localhost:5264",
   "http://localhost:5364",
+  // Production domains
   "https://cbaac.gov.ng",
   "https://www.cbaac.gov.ng",
   "https://admin.cbaac.gov.ng",
+  "https://www.admin.cbaac.gov.ng",
+  // Dev domains
   "https://cbaacdev.netlify.app",
+  "https://www.cbaacdev.netlify.app",
   "https://admincbaacdev.netlify.app",
+  "https://www.admincbaacdev.netlify.app",
+  // Admin domains
+  "https://admin.cbaac.gov.ng",
+  "https://www.admin.cbaac.gov.ng",
   ...envOrigins,
 ];
 
@@ -107,10 +115,15 @@ app.use(
       if (!origin || allowAllCors || allowedOrigins.includes(origin)) {
         return callback(null, true);
       }
+      // Log CORS rejections for debugging
+      console.warn(`CORS rejected origin: ${origin}`);
       return callback(new Error("CORS not allowed from origin: " + origin));
     },
-    credentials: false,
+    credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    exposedHeaders: ["Content-Length", "X-JSON-Response"],
+    maxAge: 86400,
   })
 );
 
