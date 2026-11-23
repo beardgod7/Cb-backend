@@ -104,11 +104,7 @@ const allowedOrigins = [
   ...envOrigins,
 ];
 
-const allowAllCors =
-  process.env.CORS_ALLOW_ALL === "true" ||
-  process.env.NODE_ENV !== "production";
-
-// CORS configuration - allow all origins for now
+// CORS configuration - allow all origins
 app.use(
   cors({
     origin: function (origin, callback) {
