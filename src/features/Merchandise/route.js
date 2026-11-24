@@ -78,7 +78,7 @@ const { authorize } = require("../../middleware/rolemiddleware");
  *         description: Product not found
  *       400:
  *         description: Validation error
- *
+ */
 
 // ===== Public (mounted at /merchandise) =====
 router.get("/merchandise/products", c.getProducts);
