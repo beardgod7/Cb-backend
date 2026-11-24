@@ -25,7 +25,7 @@ const upload = multer({
 
 const admin = authorize(["Admin", "SuperAdmin"]);
 
-// Image upload endpoint
+// Image upload endpoint 2
 router.post("/uploads", admin, upload.single("file"), controller.uploadImage);
 
 module.exports = router;
