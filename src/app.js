@@ -97,12 +97,18 @@ const allowedOrigins = [
   "https://www.admin.cbaac.gov.ng",
 ];
 
-// CORS configuration - allow all origins
+// CORS configuration
 app.use(
   cors({
     origin: function (origin, callback) {
-      // Allow all origins
-      callback(null, true);
+      // Allow requests with no origin (like mobile apps or curl requests)
+      if (!origin) return callback(null, true);
+      
+      if (allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("CORS not allowed from origin: " + origin));
+      }
     },
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
