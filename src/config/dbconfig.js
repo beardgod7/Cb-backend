@@ -13,7 +13,7 @@ const sequelize = new Sequelize(databaseUrl, {
     // Keep TCP connections alive so idle sockets aren't silently dropped by the host.
     keepAlive: true,
     // Give up on a connection the client-side considers dead, rather than reusing it.
-    statement_timeout: 30000,
+    statement_timeout: 60000,
   },
   pool: {
     max: 20,
