@@ -98,6 +98,11 @@ const BookstoreBook = sequelize.define(
       defaultValue: "text",
       allowNull: false,
     },
+    previewPdfUrl: {
+      type: DataTypes.STRING(1000),
+      allowNull: true,
+      comment: "URL to preview PDF file",
+    },
     coverPage: {
       type: DataTypes.STRING(1000),
       allowNull: true,

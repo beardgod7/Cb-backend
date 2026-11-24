@@ -6,7 +6,8 @@ const authenticate = () => async (req, res, next) => {
   if (!accessToken) {
     return res.status(401).json({
       success: false,
-      message: "Access token required!",
+      code: "NO_TOKEN",
+      message: "Access token required.",
     });
   }
 
@@ -15,12 +16,14 @@ const authenticate = () => async (req, res, next) => {
       if (err instanceof jwt.TokenExpiredError) {
         return res.status(401).json({
           success: false,
+          code: "TOKEN_EXPIRED",
           message: "Your session has expired. Please log in again.",
         });
       }
       return res.status(401).json({
         success: false,
-        message: "Unauthorized access. Please log in.",
+        code: "INVALID_TOKEN",
+        message: "Invalid or malformed token.",
       });
     }
 

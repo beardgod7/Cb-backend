@@ -279,6 +279,16 @@ async function adminListProducts(req, res, next) {
   }
 }
 
+async function adminGetProduct(req, res, next) {
+  try {
+    const product = await repository.getProductById(req.params.id, { includeInactive: true });
+    if (!product) throw new AppError("PRODUCT_NOT_FOUND", "Product not found", 404);
+    return ok(res, { message: "Product retrieved", data: productDetail(product) });
+  } catch (err) {
+    next(err);
+  }
+}
+
 async function adminCreateProduct(req, res, next) {
   try {
     const data = await productSchema.validateAsync(req.body);
@@ -424,6 +434,7 @@ module.exports = {
   getOrder,
   cancelOrder,
   adminListProducts,
+  adminGetProduct,
   adminCreateProduct,
   adminUpdateProduct,
   adminAdjustStock,

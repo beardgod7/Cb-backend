@@ -5,16 +5,25 @@ const { seedProgrammes } = require("./features/Programmes/seed");
 
 const PORT = process.env.PORT || 8000;
 
-server.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-});
+async function startServer() {
+  try {
+    // dbconfig initializes every registered model and waits for sync({ alter: true }).
+    // Seeds must run only after that promise resolves, otherwise their tables may
+    // not exist yet on a fresh Render database.
+    await sequelize.initializationPromise;
+    await seedArchives();
+    await seedProgrammes();
 
-// Run idempotent seeds once the schema is ready.
-sequelize
-  .authenticate()
-  .then(() => seedArchives())
-  .then(() => seedProgrammes())
-  .catch((err) => console.error("Seed bootstrap error:", err.message));
+    server.listen(PORT, () => {
+      console.log(`🚀 Server running on port ${PORT}`);
+    });
+  } catch (err) {
+    console.error("Startup failed:", err);
+    process.exitCode = 1;
+  }
+}
+
+startServer();
 
 // Graceful Shutdown Handling
 process.on("SIGINT", () => {

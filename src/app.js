@@ -75,45 +75,54 @@ app.use(
   })
 );
 
-// Allowed frontend origins. In development (or when CORS_ALLOW_ALL=true) any
-// origin is accepted; in production only the site's domains + localhost are.
-const envOrigins = (process.env.CORS_ORIGINS || "")
-  .split(",")
-  .map((o) => o.trim())
-  .filter(Boolean);
-
+// Allowed frontend origins
 const allowedOrigins = [
   "http://localhost:3000",
   "http://localhost:5173",
+  "http://localhost:5263",
+  "http://localhost:5264",
+  "http://localhost:5364",
+  // Production domains
   "https://cbaac.gov.ng",
   "https://www.cbaac.gov.ng",
-  ...envOrigins,
+  "https://admin.cbaac.gov.ng",
+  "https://www.admin.cbaac.gov.ng",
+  // Dev domains
+  "https://cbaacdev.netlify.app",
+  "https://www.cbaacdev.netlify.app",
+  "https://admincbaacdev.netlify.app",
+  "https://www.admincbaacdev.netlify.app",
+  // Admin domains
+  "https://admin.cbaac.gov.ng",
+  "https://www.admin.cbaac.gov.ng",
 ];
 
-const allowAllCors =
-  process.env.CORS_ALLOW_ALL === "true" ||
-  process.env.NODE_ENV !== "production";
-
+// CORS configuration
 app.use(
   cors({
     origin: function (origin, callback) {
-      // Non-browser clients (no Origin header) and allowlisted origins pass.
-      if (!origin || allowAllCors || allowedOrigins.includes(origin)) {
-        return callback(null, true);
+      // Allow requests with no origin (like mobile apps or curl requests)
+      if (!origin) return callback(null, true);
+      
+      if (allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("CORS not allowed from origin: " + origin));
       }
-      return callback(new Error("CORS not allowed from origin: " + origin));
     },
-    credentials: false,
+    credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    exposedHeaders: ["Content-Length", "X-JSON-Response"],
+    maxAge: 86400,
   })
 );
 
-// Handle preflight requests// Metrics endpoint for Prometheus to scrape
+// Metrics endpoint for Prometheus to scrape
 app.get("/metrics", async (req, res) => {
   res.set("Content-Type", register.contentType);
   res.end(await register.metrics());
 });
-app.options("*", cors());
 
 // Middleware setup
 app.use(helmet());

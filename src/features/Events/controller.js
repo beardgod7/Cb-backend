@@ -10,6 +10,7 @@ const {
   deleteFromCloudinary,
 } = require("../../service/upload/cloudinaryuploader");
 const { getBookingCountByEvent } = require("../Booking/repository");
+const { toCamelCase, standardResponse, standardListResponse } = require("../../utils/responseNormalizer");
 
 async function createEvents(req, res, next) {
   try {
@@ -44,10 +45,7 @@ async function createEvents(req, res, next) {
     };
 
     const newOffering = await repository.createEvents(completeOfferingData);
-    return res.status(200).json({
-      message: "Event created successfully",
-      offering: newOffering,
-    });
+    return standardResponse(res, 201, "Event created successfully", newOffering);
   } catch (err) {
     console.error("Error in eventOffering:", err);
     next(err);
@@ -87,10 +85,7 @@ async function createAlbums(req, res, next) {
     };
 
     const newOffering = await repository.createAlbums(completeOfferingData);
-    return res.status(200).json({
-      message: "Albums offering created successfully",
-      offering: newOffering,
-    });
+    return standardResponse(res, 201, "Album created successfully", newOffering);
   } catch (err) {
     console.error("Error in AlbumsOffering:", err);
     next(err);

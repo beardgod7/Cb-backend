@@ -84,6 +84,11 @@ router.post(
   authorize(["Admin", "SuperAdmin"]),
   purchase.adminSetFile
 );
+router.get(
+  "/admin/books/:id/pages",
+  authorize(["Admin", "SuperAdmin"]),
+  purchase.adminGetBookPages
+);
 router.post(
   "/admin/books/:id/pages",
   authorize(["Admin", "SuperAdmin"]),

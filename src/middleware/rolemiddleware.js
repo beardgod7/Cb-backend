@@ -5,9 +5,10 @@ function authorize(requiredRoles = []) {
     const token = req.headers["authorization"];
 
     if (!token) {
-      return res.status(403).json({
+      return res.status(401).json({
         success: false,
-        message: "Access denied. No token provided.",
+        code: "NO_TOKEN",
+        message: "Access token required.",
       });
     }
 
@@ -22,6 +23,7 @@ function authorize(requiredRoles = []) {
       if (!decoded.role || !requiredRoles.includes(decoded.role)) {
         return res.status(403).json({
           success: false,
+          code: "INSUFFICIENT_PERMISSIONS",
           message:
             "Forbidden: You do not have permission to perform this action.",
         });
@@ -29,9 +31,17 @@ function authorize(requiredRoles = []) {
 
       next();
     } catch (error) {
-      return res.status(403).json({
+      if (error instanceof jwt.TokenExpiredError) {
+        return res.status(401).json({
+          success: false,
+          code: "TOKEN_EXPIRED",
+          message: "Your session has expired. Please log in again.",
+        });
+      }
+      return res.status(401).json({
         success: false,
-        message: "Invalid token.",
+        code: "INVALID_TOKEN",
+        message: "Invalid or malformed token.",
       });
     }
   };
