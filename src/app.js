@@ -102,11 +102,17 @@ app.use(
   cors({
     origin: function (origin, callback) {
       // Allow requests with no origin (like mobile apps or curl requests)
-      if (!origin) return callback(null, true);
+      if (!origin) {
+        console.log("✅ CORS: No origin provided (mobile app or curl request)");
+        return callback(null, true);
+      }
       
       if (allowedOrigins.includes(origin)) {
+        console.log(`✅ CORS: Allowed origin - ${origin}`);
         callback(null, true);
       } else {
+        console.error(`❌ CORS: Blocked origin - ${origin}`);
+        console.error(`📋 Allowed origins: ${allowedOrigins.join(", ")}`);
         callback(new Error("CORS not allowed from origin: " + origin));
       }
     },

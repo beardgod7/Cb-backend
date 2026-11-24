@@ -12,8 +12,9 @@ const sequelize = new Sequelize(databaseUrl, {
     },
     // Keep TCP connections alive so idle sockets aren't silently dropped by the host.
     keepAlive: true,
-    // Give up on a connection the client-side considers dead, rather than reusing it.
-    statement_timeout: 60000,
+    // Increase statement timeout for heavy introspection queries during sync
+    // The foreign key introspection can be slow on databases with many tables
+    statement_timeout: 300000, // 5 minutes instead of 60 seconds
   },
   pool: {
     max: 20,
@@ -48,11 +49,18 @@ const initializationPromise = sequelize
     console.log("Database connected successfully!");
 
     // Auto-sync all defined models before seeders query their tables.
-    return sequelize.sync({ alter: true });
+    // Set alter: false to skip time-consuming introspection on subsequent deployments
+    // Use alter: true only when explicitly needed for schema changes
+    console.log("Synchronizing models with database schema...");
+    return sequelize.sync({ alter: false });
   })
   .then(() => {
     console.log("All models were synchronized successfully.");
     return sequelize;
+  })
+  .catch((err) => {
+    console.error("Database initialization failed:", err.message);
+    throw err;
   });
 
 // Expose the promise on the Sequelize instance for server.js. Do not catch here:
